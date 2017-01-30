@@ -121,12 +121,25 @@ YUI.add('search-results', function(Y) {
           e.storeId = defaultSeries.storeId;
         }
       }
+
       // Now convert that object back to an ordered list and return it.
       var returnedEntities = [];
       for (var i = 0, l = orderedKeys.length; i < l; i++) {
         var k = orderedKeys[i];
         returnedEntities.push(collapsedEntities[k]);
       }
+
+      // Return only the most up to date version of the charm/ bundle
+      const entityUniqueKeys = [];
+      returnedEntities = returnedEntities.filter(entity => {
+        let unique = `${entity.name}:${entity.owner}`;
+        if (entityUniqueKeys.indexOf(unique) === -1) {
+          entityUniqueKeys.push(unique);
+          return true;
+        }
+        return false;
+      });
+
       return returnedEntities;
     },
 
@@ -144,6 +157,9 @@ YUI.add('search-results', function(Y) {
         console.error('Search request failed.');
         return;
       }
+
+      console.log(rawResults);
+
       var results = rawResults.map(function(result) {
         var model = this.props.makeEntityModel(result);
         return model.toEntity();
@@ -346,37 +362,35 @@ YUI.add('search-results', function(Y) {
           seriesItems = seriesItems.concat(seriesMap);
           state.activeChild = {
             component:
-              <div className="row no-padding-top">
-                <div className="inner-wrapper list-block">
-                  {this._generateResultsMessage(data.text, data.solutionsCount)}
-                  <div className="list-block__filters">
-                    <juju.components.SearchResultsTypeFilter
-                      changeState={this.props.changeState}
-                      currentType={currentType} />
-                    <div className="six-col last-col">
-                      <div className="list-block__filters--selects">
-                        <form>
-                          <juju.components.SearchResultsSelectFilter
-                            changeState={this.props.changeState}
-                            label="Sort by"
-                            filter='sort'
-                            items={sortItems}
-                            currentValue={nextProps.sort || this.props.sort} />
-                          <juju.components.SearchResultsSelectFilter
-                            changeState={this.props.changeState}
-                            label="Series"
-                            filter='series'
-                            items={seriesItems}
-                            currentValue={
-                                nextProps.series || this.props.series} />
-                        </form>
-                      </div>
+              <div>
+                {this._generateResultsMessage(data.text, data.solutionsCount)}
+                <div className="search-results__filters">
+                  <juju.components.SearchResultsTypeFilter
+                    changeState={this.props.changeState}
+                    currentType={currentType} />
+                  <div className="six-col last-col">
+                    <div className="search-results__filters-selects">
+                      <form>
+                        <juju.components.SearchResultsSelectFilter
+                          changeState={this.props.changeState}
+                          label="Sort by"
+                          filter='sort'
+                          items={sortItems}
+                          currentValue={nextProps.sort || this.props.sort} />
+                        <juju.components.SearchResultsSelectFilter
+                          changeState={this.props.changeState}
+                          label="Series"
+                          filter='series'
+                          items={seriesItems}
+                          currentValue={
+                              nextProps.series || this.props.series} />
+                      </form>
                     </div>
                   </div>
-                  <div className="entity-search-results">
-                    {this._generateResultsList(
-                      data.promulgatedResults, data.communityResults)}
-                  </div>
+                </div>
+                <div className="entity-search-results">
+                  {this._generateResultsList(
+                    data.promulgatedResults, data.communityResults)}
                 </div>
               </div>
           };
@@ -449,7 +463,7 @@ YUI.add('search-results', function(Y) {
     _generateResultsMessage: function(text, solutionsCount) {
       if (text) {
         return (
-          <div className="twelve-col list-block__title no-margin-bottom">
+          <div className="twelve-col search-results__title no-margin-bottom">
             Your search for &lsquo;{text}&rsquo; returned {solutionsCount}{' '}
             results.
           </div>
@@ -484,17 +498,29 @@ YUI.add('search-results', function(Y) {
         results = community;
       }
 
+      // Default to three column
+      let colspan = 'three-col';
+
+      if (results.length === 1) {
+        colspan = 'twelve-col';
+      } else if (results.length === 2) {
+        colspan = 'six-col';
+      } else if (results.length === 3) {
+        colspan = 'four-col';
+      }
+
       return (
         <div>
           <h4>
             {title} <span className="count">({results.length})</span>
           </h4>
-          <ul className='list-block__list'>
+          <ul className='search-results__list promulgated'>
             {results.map(item =>
                 <juju.components.SearchResultsItem
                   changeState={this.props.changeState}
                   key={item.storeId}
-                  item={item} />)}
+                  item={item}
+                  colspan={colspan} />)}
           </ul>
         </div>
       );

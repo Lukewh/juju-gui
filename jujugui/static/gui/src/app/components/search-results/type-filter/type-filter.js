@@ -36,7 +36,7 @@ YUI.add('search-results-type-filter', function(Y) {
     */
     _generateClasses: function(selected) {
       return classNames(
-        {selected: selected}
+        {'is-selected': selected}
       );
     },
 
@@ -64,7 +64,7 @@ YUI.add('search-results-type-filter', function(Y) {
       }];
       items.forEach(function(item) {
         components.push(
-          <li className={this._generateClasses(item.selected)}
+          <li className={`${this._generateClasses(item.selected)} tab-list__item`}
               onClick={this._handleFilterClick.bind(this, item.action)}
               key={item.label}
               tabIndex="0" role="button">
@@ -90,8 +90,8 @@ YUI.add('search-results-type-filter', function(Y) {
 
     render: function() {
       return (
-        <nav className="six-col list-block__type">
-          <ul>
+        <nav className="six-col">
+          <ul className="tab-list">
             {this._generateFilterItems()}
           </ul>
         </nav>

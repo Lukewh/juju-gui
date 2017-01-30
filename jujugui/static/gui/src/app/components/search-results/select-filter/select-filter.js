@@ -63,7 +63,7 @@ YUI.add('search-results-select-filter', function(Y) {
     },
 
     render: function() {
-      var className = 'list-block__' + this.props.filter;
+      var className = 'search-results__' + this.props.filter;
       return (
         <div className={className}>
           {this.props.label}:

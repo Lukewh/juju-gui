@@ -24,7 +24,8 @@ YUI.add('search-results-item', function(Y) {
 
     propTypes: {
       changeState: React.PropTypes.func.isRequired,
-      item: React.PropTypes.object.isRequired
+      item: React.PropTypes.object.isRequired,
+      colspan: React.PropTypes.string.isRequired
     },
 
     /**
@@ -68,34 +69,78 @@ YUI.add('search-results-item', function(Y) {
     },
 
     /**
+      Generate single element for an icon
+
+      @method _generateIcon
+      @param {Object} an application object.
+      @returns {String} The generated element.
+     */
+    _generateIcon: function(application) {
+      const staticIconPath ='static/gui/build/app/assets/images/non-sprites/charm_160.svg';
+      return <img src={application.iconPath || staticIconPath}
+                  className="list-icons__image charm__logo"
+                  alt={application.display_name + ' icon'} />;
+    },
+
+    /**
       Generate the elements for the icon list.
 
       @method _generateIconList
       @returns {String} The generated elements.
     */
     _generateIconList: function() {
-      var applications = this.props.item.applications || [this.props.item];
-      var components = [];
-      applications.forEach(function(service) {
-        var src = service.iconPath ||
-            'static/gui/build/app/assets/images/non-sprites/charm_160.svg';
-        components.push(
-          <li className="list-icons__item tooltip"
-            key={service.displayName}
-            role="button" tabIndex="0"
-            onClick={this._handleItemClick.bind(this, service.id)}>
-            <img src={src}
-              className="list-icons__image"
-              alt={service.displayName} />
-            <span className="tooltip__tooltip">
-              <span className="tooltip__inner tooltip__inner--down">
-                {service.displayName}
-              </span>
-            </span>
-          </li>
-        );
-      }, this);
-      return components;
+      let applications = this.props.item.applications;
+      const application = this.props.item;
+      const single = !applications && application;
+      let images;
+
+      if (single) {
+        images = this._generateIcon(application);
+      } else {
+        const totalApplications = applications.length;
+        const imageList = [];
+
+        if (totalApplications > 4) {
+          applications = applications.splice(0, 3);
+        }
+
+        applications.forEach(function(application) {
+          imageList.push(
+            <li className="icon-list__item" key={application.name}>
+              {this._generateIcon(application)}
+            </li>);
+        }.bind(this));
+
+        if (totalApplications > 4) {
+          imageList.push(
+            <li className="icon-list__item--count" key="more">
+              +{totalApplications - 3}
+            </li>);
+        }
+
+        images = <ul className="icon-list">
+            {imageList}
+          </ul>;
+      }
+
+      return <div className="search-results__image two-col">
+        {images}
+      </div>;
+    },
+
+    _generateOwner: function() {
+      const item = this.props.item;
+      let owner = 'No owner';
+
+      if (this.props.item.owner) {
+        owner = <span className="link"
+            onClick={this._handleOwnerClick.bind(this, item.owner)}
+            role="button"
+            tabIndex="0">
+             {item.owner}
+          </span>;
+      }
+      return <p className="search-results__owner">By&nbsp;{owner}</p>;
     },
 
     /**
@@ -105,24 +150,39 @@ YUI.add('search-results-item', function(Y) {
       @returns {String} The generated elements.
     */
     _generateSeriesList: function() {
-      var item = this.props.item;
-      var series = item.series;
-      var components = [];
-      // Prevent layouts from collapsing due to empty content.
-      if (series.length === 0) {
-        return <li>&nbsp;</li>;
+      const item = this.props.item;
+      const series = item.series;
+      let ele = '';
+      let name = series[0];
+
+      if (series[0]) {
+        if (series[0].name) {
+          name = series[0].name;
+        }
+
+        const multiSeries = series.length > 1 ? ` +${series.length - 1}` : ``;
+
+        ele = <p>Works on: {name}{multiSeries}</p>;
+
       }
-      series.forEach(function(s) {
-        components.push(
-          <li className="list-series__item"
-            key={s.name}>
-            <a onClick={this._handleItemClick.bind(this, s.storeId)}>
-              {s.name}
-            </a>
-          </li>
-        );
-      }, this);
-      return components;
+
+      return ele;
+      // var components = [];
+      // // Prevent layouts from collapsing due to empty content.
+      // if (series.length === 0) {
+      //   return <li>&nbsp;</li>;
+      // }
+      // series.forEach(function(singleSeries) {
+      //   components.push(
+      //     <li className="list-series__item"
+      //       key={singleSeries.name}>
+      //       <a onClick={this._handleItemClick.bind(this, singleSeries.storeId)}>
+      //         {singleSeries.name}
+      //       </a>
+      //     </li>
+      //   );
+      // }, this);
+      // return components;
     },
 
     /**
@@ -236,44 +296,63 @@ YUI.add('search-results-item', function(Y) {
     },
 
     render: function() {
-      var item = this.props.item;
+      const item = this.props.item;
+      const type = this.props.item.type;
+      const colspan = this.props.colspan;
+
       return (
-        <li className={'list-block__list--item ' + item.type}
-            tabIndex="0" role="button"
-            onClick={this._handleItemClick.bind(this, item.id)}>
-          <div className="four-col charm-name__column">
-            <h3 className="list-block__list--item-title">
+        <li className={`search-results__list-item ${type} ${colspan}`}
+          tabIndex="0" role="button" key={item.id}
+          onClick={this._handleItemClick.bind(this, item.id)}>
+          {this._generateIconList()}
+          <div className="search-results__details seven-col">
+            <h3 className="search-results__name">
               {item.displayName}
-              {this._generateSpecialFlag()}
             </h3>
-            <ul className="tag-list">
-              {this._generateTagList()}
-            </ul>
+            {this._generateOwner()}
+            {this._generateSeriesList()}
           </div>
-          <div className={this._generateSeriesClass()}>
-            <ul className="list-series">
-              {this._generateSeriesList()}
-            </ul>
+          <div className="search-results__action three-col last-col">
+            <a href="" className="button--inline-neutral">Add to canvas</a>
           </div>
-          <div className={this._generateCharmsClass()}>
-            <ul className="list-icons clearfix">
-              {this._generateIconList()}
-            </ul>
-          </div>
-          <div className={
-            'prepend-one two-col owner__column list-block__column last-col'}>
-            <p className="cell">
-              {'By '}
-              <span className="link"
-                onClick={this._handleOwnerClick.bind(this, item.owner)}
-                role="button"
-                tabIndex="0">
-                {item.owner}
-              </span>
-            </p>
-          </div>
-        </li>
-      );
+        </li>);
+      // return (
+      //   <li className={'list-block__list--item ' + item.type}
+      //       tabIndex="0" role="button"
+      //       onClick={this._handleItemClick.bind(this, item.id)}>
+      //     <div className="four-col charm-name__column">
+      //       <h3 className="list-block__list--item-title">
+      //         {item.displayName}
+      //         {this._generateSpecialFlag()}
+      //       </h3>
+      //       <ul className="tag-list">
+      //         {this._generateTagList()}
+      //       </ul>
+      //     </div>
+      //     <div className={this._generateSeriesClass()}>
+      //       <ul className="list-series">
+      //         {this._generateSeriesList()}
+      //       </ul>
+      //     </div>
+      //     <div className={this._generateCharmsClass()}>
+      //       <ul className="list-icons clearfix">
+      //         {this._generateIconList()}
+      //       </ul>
+      //     </div>
+      //     <div className={
+      //       'prepend-one two-col owner__column list-block__column last-col'}>
+      //       <p className="cell">
+      //         {'By '}
+      //         <span className="link"
+      //           onClick={this._handleOwnerClick.bind(this, item.owner)}
+      //           role="button"
+      //           tabIndex="0">
+      //           {item.owner}
+      //         </span>
+      //       </p>
+      //     </div>
+      //   </li>
+      // );
     }
   });
 
