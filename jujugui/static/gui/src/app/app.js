@@ -982,11 +982,18 @@ YUI.add('juju-gui', function(Y) {
     */
     _renderLogin: function(err) {
       document.getElementById('loading-message').style.display = 'none';
+      // XXX j.c.sackett 2017-01-30 Right now USSO link is using
+      // loginToController, while loginToAPIs is used by the login form.
+      // We want to use loginToAPIs everywhere since it handles more.
+      const controllerAPI = this.controllerAPI;
+      const loginToController = controllerAPI.loginWithMacaroon.bind(
+        controllerAPI, this.bakeryFactory.get('juju'));
       ReactDOM.render(
         <window.juju.components.Login
           setCredentials={this.env.setCredentials.bind(this.env)}
           isLegacyJuju={this.isLegacyJuju()}
           loginToAPIs={this.loginToAPIs.bind(this)}
+          loginToController={loginToController}
           errorMessage={err} />,
         document.getElementById('login-container'));
     },
@@ -1266,12 +1273,14 @@ YUI.add('juju-gui', function(Y) {
           cloud={cloud}
           credential={env.get('credential')}
           changes={currentChangeSet}
+          charmsGetById={db.charms.getById.bind(db.charms)}
           deploy={utils.deploy.bind(utils, this)}
           environment={db.environment}
           generateAllChangeDescriptions={
             changesUtils.generateAllChangeDescriptions.bind(
               changesUtils, services, db.units)}
           generateCloudCredentialName={utils.generateCloudCredentialName}
+          getAgreements={this.terms.getAgreements.bind(this.terms)}
           getAuth={this._getAuth.bind(this)}
           getCloudCredentials={
             controllerAPI && controllerAPI.getCloudCredentials.bind(
@@ -1292,6 +1301,7 @@ YUI.add('juju-gui', function(Y) {
           modelName={modelName}
           region={env.get('region')}
           servicesGetById={services.getById.bind(services)}
+          showTerms={this.terms.showTerms.bind(this.terms)}
           updateCloudCredential={
             controllerAPI && controllerAPI.updateCloudCredential.bind(
               controllerAPI)}
@@ -1343,14 +1353,14 @@ YUI.add('juju-gui', function(Y) {
       Renders the import and export component to the page in the
       designated element.
 
-      @method _renderImportExport
+      @method _renderModelActions
     */
-    _renderImportExport: function() {
+    _renderModelActions: function() {
       const env = this.env;
       const db = this.db;
       const utils = views.utils;
       ReactDOM.render(
-        <window.juju.components.ImportExport
+        <window.juju.components.ModelActions
           acl={this.acl}
           changeState={this.state.changeState.bind(this.state)}
           currentChangeSet={env.get('ecs').getCurrentChangeSet()}
@@ -1364,7 +1374,7 @@ YUI.add('juju-gui', function(Y) {
             this.bundleImporter)}
           renderDragOverNotification={
             this._renderDragOverNotification.bind(this)} />,
-        document.getElementById('import-export-container'));
+        document.getElementById('model-actions-container'));
     },
 
     /**
@@ -2702,7 +2712,7 @@ YUI.add('juju-gui', function(Y) {
         this.db.machines.filterByParent().length
       );
       this._renderDeploymentBar();
-      this._renderImportExport();
+      this._renderModelActions();
       this._renderProviderLogo();
       this._renderZoom();
       this._renderBreadcrumb();
@@ -2993,7 +3003,7 @@ YUI.add('juju-gui', function(Y) {
     'deployment-signup',
     'env-size-display',
     'header-breadcrumb',
-    'import-export',
+    'model-actions',
     'expanding-progress',
     'header-search',
     'inspector-component',
