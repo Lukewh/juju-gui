@@ -47,9 +47,9 @@ YUI.add('search-results-type-filter', function(Y) {
       @returns {Object} The components.
     */
     _generateFilterItems: function() {
-      var components = [];
-      var currentType = this.props.currentType;
-      var items = [{
+      const components = [];
+      const currentType = this.props.currentType;
+      const items = [{
         label: 'All',
         selected: !currentType,
         action: null

@@ -37,7 +37,7 @@ YUI.add('search-results-select-filter', function(Y) {
       @returns {Object} The components.
     */
     _generateItems: function() {
-      var components = [];
+      const components = [];
       this.props.items.forEach(function(item) {
         components.push(
           <option value={item.value}
@@ -63,7 +63,7 @@ YUI.add('search-results-select-filter', function(Y) {
     },
 
     render: function() {
-      var className = 'search-results__' + this.props.filter;
+      const className = 'search-results__' + this.props.filter;
       return (
         <div className={className}>
           {this.props.label}:

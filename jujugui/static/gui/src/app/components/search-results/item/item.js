@@ -18,7 +18,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 'use strict';
 
-YUI.add('search-results-item', function(Y) {
+YUI.add('search-results-item', function() {
 
   juju.components.SearchResultsItem = React.createClass({
 
@@ -29,54 +29,13 @@ YUI.add('search-results-item', function(Y) {
     },
 
     /**
-      Generate the element for the special flag.
-
-      @method _generateSpecialFlag
-      @returns {String} The generated elements.
-    */
-    _generateSpecialFlag: function() {
-      if (!this.props.item.special) {
-        return;
-      }
-      return (
-          <span className="special-flag"></span>
-      );
-    },
-
-    /**
-      Generate the elements for the tag list.
-
-      @method _generateTagList
-      @returns {String} The generated elements.
-    */
-    _generateTagList: function() {
-      var components = [];
-      var tags = this.props.item.tags || [];
-      if (tags.length === 0) {
-        return <span>{' '}</span>;
-      }
-      tags.forEach(function(tag, i) {
-        components.push(
-          <li className="tag-list--item"
-            key={tag + i}
-            role="button" tabIndex="0"
-            onClick={this._handleTagClick.bind(this, tag)}>
-            {tag}
-          </li>
-        );
-      }, this);
-      return components;
-    },
-
-    /**
       Generate single element for an icon
 
       @method _generateIcon
-      @param {Object} an application object.
+      @param application {Object} an application object.
       @returns {String} The generated element.
      */
     _generateIcon: function(application) {
-      console.log(application);
       const staticIconPath ='static/gui/build/app/assets/images/non-sprites/charm_160.svg';
       return <img src={application.iconPath || staticIconPath}
                   className="list-icons__image charm__logo"
@@ -238,44 +197,6 @@ YUI.add('search-results-item', function(Y) {
           type: null
         }
       });
-    },
-
-    /**
-      Generate the series list item class based on entity type
-
-      @method _generateSeriesClass
-      @returns {String} The generated class name.
-    */
-    _generateSeriesClass: function() {
-      var item = this.props.item.type;
-      return classNames(
-        'series__column',
-        {
-          'two-col': item === 'bundle'
-        },
-        {
-          'four-col': item === 'charm'
-        }
-      );
-    },
-
-    /**
-      Generate the charms column class based on entity type
-
-      @method _generateCharmsClass
-      @returns {String} The generated class name.
-    */
-    _generateCharmsClass: function() {
-      var item = this.props.item.type;
-      return classNames(
-        'charm-logos__column list-block__column',
-        {
-          'three-col': item === 'bundle'
-        },
-        {
-          'one-col': item === 'charm'
-        }
-      );
     },
 
     render: function() {
