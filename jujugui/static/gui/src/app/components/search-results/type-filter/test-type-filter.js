@@ -31,65 +31,68 @@ describe('SearchResultsTypeFilter', function() {
   });
 
   it('can render a type filter', function() {
-    var changeState = sinon.stub();
-    var output = jsTestUtils.shallowRender(
+    const changeState = sinon.stub();
+    const output = jsTestUtils.shallowRender(
       <juju.components.SearchResultsTypeFilter
         changeState={changeState}
         currentType={null} />);
-    assert.deepEqual(output,
-      <nav className="six-col list-block__type">
-        <ul>
-          <li className="selected"
-              onClick={output.props.children.props.children[0].props.onClick}
-              key="All"
-              tabIndex="0" role="button">
-            All
-          </li>
-          <li className=""
-              onClick={output.props.children.props.children[1].props.onClick}
-              key="Charms"
-              tabIndex="0" role="button">
-            Charms
-          </li>
-          <li className=""
-              onClick={output.props.children.props.children[2].props.onClick}
-              key="Bundles"
-              tabIndex="0" role="button">
-            Bundles
-          </li>
-        </ul>
-      </nav>);
+
+    const expected = <nav className="six-col">
+      <ul className="tab-list">
+        <li className="is-selected tab-list__item"
+            onClick={output.props.children.props.children[0].props.onClick}
+            key="All"
+            tabIndex="0" role="button">
+          All
+        </li>
+        <li className=" tab-list__item"
+            onClick={output.props.children.props.children[1].props.onClick}
+            key="Charms"
+            tabIndex="0" role="button">
+          Charms
+        </li>
+        <li className=" tab-list__item"
+            onClick={output.props.children.props.children[2].props.onClick}
+            key="Bundles"
+            tabIndex="0" role="button">
+          Bundles
+        </li>
+      </ul>
+    </nav>;
+
+    assert.deepEqual(output, expected);
   });
 
   it('can show a filter as active', function() {
-    var changeState = sinon.stub();
-    var output = jsTestUtils.shallowRender(
+    const changeState = sinon.stub();
+    const output = jsTestUtils.shallowRender(
       <juju.components.SearchResultsTypeFilter
         changeState={changeState}
         currentType='bundle' />);
-    assert.deepEqual(output,
-      <nav className="six-col list-block__type">
-        <ul>
-          <li className=""
-              onClick={output.props.children.props.children[0].props.onClick}
-              key="All"
-              tabIndex="0" role="button">
-            All
-          </li>
-          <li className=""
-              onClick={output.props.children.props.children[1].props.onClick}
-              key="Charms"
-              tabIndex="0" role="button">
-            Charms
-          </li>
-          <li className="selected"
-              onClick={output.props.children.props.children[2].props.onClick}
-              key="Bundles"
-              tabIndex="0" role="button">
-            Bundles
-          </li>
-        </ul>
-      </nav>);
+
+    const expected = <nav className="six-col">
+      <ul className="tab-list">
+        <li className=" tab-list__item"
+            onClick={output.props.children.props.children[0].props.onClick}
+            key="All"
+            tabIndex="0" role="button">
+          All
+        </li>
+        <li className=" tab-list__item"
+            onClick={output.props.children.props.children[1].props.onClick}
+            key="Charms"
+            tabIndex="0" role="button">
+          Charms
+        </li>
+        <li className="is-selected tab-list__item"
+            onClick={output.props.children.props.children[2].props.onClick}
+            key="Bundles"
+            tabIndex="0" role="button">
+          Bundles
+        </li>
+      </ul>
+    </nav>;
+    assert.deepEqual(output, expected);
   });
 
   it('can change the state when a filter is clicked', function() {

@@ -25,14 +25,15 @@ chai.config.truncateThreshold = 0;
 
 describe('SearchResultsItem', function() {
 
+  const changeState = sinon.stub();
+
   beforeAll(function(done) {
     // By loading this file it adds the component to the juju components.
     YUI().use('search-results-item', function() { done(); });
   });
 
   it('can render an item', function() {
-    var changeState = sinon.stub();
-    var item = {
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -46,89 +47,49 @@ describe('SearchResultsItem', function() {
       tags: ['tag1', 'tag2'],
       series: [{name: 'vivid'}, {name: 'wily'}]
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={changeState}
           key={item.storeId}
-          item={item} />);
-    var tags = output.props.children[0].props.children[1].props.children;
-    var series = output.props.children[1].props.children.props.children;
-    var icons = output.props.children[2].props.children.props.children;
-    var owner = output.props.children[3].props.children.props.children[1];
-    var expected = (
-      <li className="list-block__list--item charm"
+          item={item}
+          colspan='two-col' />);
+
+    const itemClick = output.props.onClick;
+    const ownerClick = output.props.children[1].props.children[1].props.children[1].props.onClick;
+
+    const expected = (
+      <li className="search-results__list-item charm two-col"
           tabIndex="0" role="button"
-          onClick={output.props.onClick}>
-        <div className="four-col charm-name__column">
-          <h3 className="list-block__list--item-title">
+          key="mysql"
+          onClick={itemClick}>
+        <div className="search-results__image two-col">
+          <img src="static/gui/build/app/assets/images/non-sprites/charm_160.svg"
+               className="list-icons__image charm__logo"
+               alt="mysql icon" />
+        </div>
+        <div className="search-results__details seven-col">
+          <h3 className="search-results__name">
             mysql
-            <span className="special-flag"></span>
           </h3>
-          <ul className="tag-list">
-            <li className="tag-list--item"
-              key="tag10"
-              role="button" tabIndex="0"
-              onClick={tags[0].props.onClick}>
-              tag1
-             </li>
-            <li className="tag-list--item"
-              key="tag21"
-              role="button" tabIndex="0"
-              onClick={tags[1].props.onClick}>
-              tag2
-            </li>
-          </ul>
-        </div>
-        <div className="series__column four-col">
-          <ul className="list-series">
-            {[<li className="list-series__item"
-              key="vivid">
-              <a onClick={series[0].props.children.props.onClick}>vivid</a>
-            </li>,
-            <li className="list-series__item"
-              key="wily">
-              <a onClick={series[1].props.children.props.onClick}>wily</a>
-            </li>]}
-          </ul>
-        </div>
-        <div className="charm-logos__column list-block__column one-col">
-          <ul className="list-icons clearfix">
-            {[<li className="list-icons__item tooltip"
-              key="mysql"
-              role="button" tabIndex="0"
-              onClick={icons[0].props.onClick}>
-              <img src=
-                {'static/gui/build/app/assets/images/non-sprites/charm_160.svg'}
-                className="list-icons__image"
-                alt="mysql" />
-              <span className="tooltip__tooltip">
-                <span className="tooltip__inner tooltip__inner--down">
-                  mysql
-                </span>
-              </span>
-            </li>]}
-          </ul>
-        </div>
-        <div className={
-          'prepend-one two-col owner__column list-block__column last-col'}>
-          <p className="cell">
-            {'By '}
-            <span className="link"
-              onClick={owner.props.onClick}
-              role="button"
-              tabIndex="0">
-              {item.owner}
-            </span>
+          <p className="search-results__owner">
+            By&nbsp;<span className="link" role="button" tabIndex="0" onClick={ownerClick}>test-owner</span>
           </p>
+          <p>Works on: {'vivid'}{' +1'}
+          </p>
+        </div>
+        <div className="search-results__action three-col last-col">
+          <a href="" className="button--inline-neutral">
+            Add to canvas
+          </a>
         </div>
       </li>
     );
+
     assert.deepEqual(output, expected);
   });
 
   it('can render an item with defaults for missing props', function() {
-    var changeState = sinon.stub();
-    var item = {
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -141,69 +102,48 @@ describe('SearchResultsItem', function() {
       type: 'charm',
       series: []
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={changeState}
           key={item.storeId}
-          item={item} />);
-    var icons = output.props.children[2].props.children.props.children;
-    var owner = output.props.children[3].props.children.props.children[1];
-    var expected = (
-      <li className="list-block__list--item charm"
+          item={item}
+          colspan='two-col' />);
+
+    const itemClick = output.props.onClick;
+    const ownerClick = output.props.children[1].props.children[1].props.children[1].props.onClick;
+
+    const expected = (
+      <li className="search-results__list-item charm two-col"
           tabIndex="0" role="button"
-          onClick={output.props.onClick}>
-        <div className="four-col charm-name__column">
-          <h3 className="list-block__list--item-title">
+          key="mysql"
+          onClick={itemClick}>
+        <div className="search-results__image two-col">
+          <img src="static/gui/build/app/assets/images/non-sprites/charm_160.svg"
+               className="list-icons__image charm__logo"
+               alt="mysql icon" />
+        </div>
+        <div className="search-results__details seven-col">
+          <h3 className="search-results__name">
             mysql
-            <span className="special-flag"></span>
           </h3>
-          <ul className="tag-list">
-            <span>{' '}</span>
-          </ul>
-        </div>
-        <div className="series__column four-col">
-          <ul className="list-series">
-            <li>&nbsp;</li>
-          </ul>
-        </div>
-        <div className="charm-logos__column list-block__column one-col">
-          <ul className="list-icons clearfix">
-            {[<li className="list-icons__item tooltip"
-              key="mysql"
-              role="button" tabIndex="0"
-              onClick={icons[0].props.onClick}>
-              <img src={
-                'static/gui/build/app/assets/images/non-sprites/charm_160.svg'}
-                className="list-icons__image"
-                alt="mysql" />
-              <span className="tooltip__tooltip">
-                <span className="tooltip__inner tooltip__inner--down">
-                  mysql
-                </span>
-              </span>
-            </li>]}
-          </ul>
-        </div>
-        <div className={
-          'prepend-one two-col owner__column list-block__column last-col'}>
-          <p className="cell">
-            {'By '}
-            <span className="link"
-              onClick={owner.props.onClick}
-              role="button"
-              tabIndex="0">
-              {item.owner}
-            </span>
+          <p className="search-results__owner">
+            By&nbsp;<span className="link" role="button" tabIndex="0" onClick={ownerClick}>test-owner</span>
           </p>
+          {''}
+        </div>
+        <div className="search-results__action three-col last-col">
+          <a href="" className="button--inline-neutral">
+            Add to canvas
+          </a>
         </div>
       </li>
     );
+
     assert.deepEqual(output, expected);
   });
 
   it('can render icons for a bundle', function() {
-    var changeState = sinon.stub();
-    var item = {
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -225,82 +165,57 @@ describe('SearchResultsItem', function() {
         iconPath: 'apache2.svg'
       }]
     };
-    var output = jsTestUtils.shallowRender(
-        <juju.components.SearchResultsItem
-          changeState={changeState}
-          key={item.storeId}
-          item={item} />);
-    var icons = output.props.children[2].props.children.props.children;
-    var owner = output.props.children[3].props.children.props.children[1];
-    var expected = (
-      <li className="list-block__list--item bundle"
+    const output = jsTestUtils.shallowRender(
+      <juju.components.SearchResultsItem
+        changeState={changeState}
+        key={item.storeId}
+        item={item}
+        colspan='two-col' />);
+
+    const itemClick = output.props.onClick;
+    const ownerClick = output.props.children[1].props.children[1].props.children[1].props.onClick;
+
+    const expected = (
+      <li className="search-results__list-item bundle two-col"
           tabIndex="0" role="button"
-          onClick={output.props.onClick}>
-        <div className="four-col charm-name__column">
-          <h3 className="list-block__list--item-title">
+          key="mysql"
+          onClick={itemClick}>
+        <div className="search-results__image two-col">
+          <ul className="icon-list">
+            <li key="cs:wordpress"
+                className="icon-list__item">
+              <img src="wordpress.svg" className="list-icons__image charm__logo" alt="wordpress icon" />
+            </li>
+            <li key="cs:apache2"
+                className="icon-list__item">
+              <img src="apache2.svg" className="list-icons__image charm__logo" alt="apache2 icon" />
+            </li>
+          </ul>
+        </div>
+        <div className="search-results__details seven-col">
+          <h3 className="search-results__name">
             mysql
-            <span className="special-flag"></span>
           </h3>
-          <ul className="tag-list">
-            <span>{' '}</span>
-          </ul>
-        </div>
-        <div className="series__column two-col">
-          <ul className="list-series">
-            <li>&nbsp;</li>
-          </ul>
-        </div>
-        <div className="charm-logos__column list-block__column three-col">
-          <ul className="list-icons clearfix">
-            <li className="list-icons__item tooltip"
-              key="wordpress"
-              role="button" tabIndex="0"
-              onClick={icons[0].props.onClick}>
-              <img src="wordpress.svg"
-                className="list-icons__image"
-                alt="wordpress" />
-              <span className="tooltip__tooltip">
-                <span className="tooltip__inner tooltip__inner--down">
-                  wordpress
-                </span>
-              </span>
-            </li>
-            <li className="list-icons__item tooltip"
-              key="apache2"
-              role="button" tabIndex="0"
-              onClick={icons[1].props.onClick}>
-              <img src="apache2.svg"
-                className="list-icons__image"
-                alt="apache2" />
-              <span className="tooltip__tooltip">
-                <span className="tooltip__inner tooltip__inner--down">
-                  apache2
-                </span>
-              </span>
-            </li>
-          </ul>
-        </div>
-        <div className={
-          'prepend-one two-col owner__column list-block__column last-col'}>
-          <p className="cell">
-            {'By '}
-            <span className="link"
-              onClick={owner.props.onClick}
-              role="button"
-              tabIndex="0">
-              {item.owner}
-            </span>
+          <p className="search-results__owner">
+            By&nbsp;<span className="link" role="button" tabIndex="0" onClick={ownerClick}>test-owner</span>
           </p>
+          {''}
+        </div>
+        <div className="search-results__action three-col last-col">
+          <a href="" className="button--inline-neutral">
+            Add to canvas
+          </a>
         </div>
       </li>
     );
+
     assert.deepEqual(output, expected);
   });
 
   it('can handle clicking on an item', function() {
-    var changeState = sinon.stub();
-    var stopPropagation = sinon.stub();
-    var item = {
+    const changeState = sinon.stub();
+    const stopPropagation = sinon.stub();
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -314,11 +229,12 @@ describe('SearchResultsItem', function() {
       tags: ['tag1', 'tag2'],
       series: [{name: 'vivid'}, {name: 'wily'}]
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={changeState}
           key={item.storeId}
-          item={item} />);
+          item={item}
+          colspan="two-col" />);
     output.props.onClick({stopPropagation: stopPropagation});
     assert.equal(changeState.callCount, 1);
     assert.equal(stopPropagation.callCount, 1);
@@ -328,91 +244,10 @@ describe('SearchResultsItem', function() {
     });
   });
 
-  it('can handle clicking on a series', function() {
-    var changeState = sinon.stub();
-    var stopPropagation = sinon.stub();
-    var item = {
-      name: 'mysql',
-      displayName: 'mysql',
-      special: true,
-      url: 'http://example.com/mysql',
-      downloads: 1000,
-      owner: 'test-owner',
-      promulgated: true,
-      id: 'mysql',
-      storeId: '~test-owner/vivid/mysql',
-      type: 'charm',
-      tags: ['tag1', 'tag2'],
-      series: [
-        {name: 'vivid', storeId: '~test-owner/vivid/mysql'},
-        {name: 'wily', storeId: '~test-owner/wily/mysql'}
-      ]
-    };
-    var output = jsTestUtils.shallowRender(
-        <juju.components.SearchResultsItem
-          changeState={changeState}
-          key={item.storeId}
-          item={item} />);
-    var series = output.props.children[1].props.children.props.children;
-    series[0].props.children.props.onClick({stopPropagation: stopPropagation});
-    assert.equal(changeState.callCount, 1);
-    assert.equal(stopPropagation.callCount, 1);
-    assert.deepEqual(changeState.args[0][0], {
-      search: null,
-      store: '~test-owner/vivid/mysql'
-    });
-    series[1].props.children.props.onClick({stopPropagation: stopPropagation});
-    assert.equal(changeState.callCount, 2);
-    assert.equal(stopPropagation.callCount, 2);
-    assert.deepEqual(changeState.args[1][0], {
-      search: null,
-      store: '~test-owner/wily/mysql'
-    });
-  });
-
-  it('can handle clicking on a tag', function() {
-    var changeState = sinon.stub();
-    var stopPropagation = sinon.stub();
-    var item = {
-      name: 'mysql',
-      displayName: 'mysql',
-      special: true,
-      url: 'http://example.com/mysql',
-      downloads: 1000,
-      owner: 'test-owner',
-      promulgated: true,
-      id: 'mysql',
-      storeId: '~test-owner/mysql',
-      type: 'charm',
-      tags: ['tag1', 'tag2'],
-      series: [{name: 'vivid'}, {name: 'wily'}]
-    };
-    var output = jsTestUtils.shallowRender(
-        <juju.components.SearchResultsItem
-          changeState={changeState}
-          key={item.storeId}
-          item={item} />);
-    output.props.children[0].props.children[1].props.children[0]
-        .props.onClick({stopPropagation: stopPropagation});
-    assert.equal(changeState.callCount, 1);
-    assert.equal(stopPropagation.callCount, 1);
-    assert.deepEqual(changeState.args[0][0], {
-      search: {
-        owner: null,
-        provides: null,
-        requires: null,
-        series: null,
-        tags: 'tag1',
-        text: '',
-        type: null
-      }
-    });
-  });
-
   it('can handle clicking on an owner', function() {
-    var changeState = sinon.stub();
-    var stopPropagation = sinon.stub();
-    var item = {
+    const changeState = sinon.stub();
+    const stopPropagation = sinon.stub();
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -426,12 +261,13 @@ describe('SearchResultsItem', function() {
       tags: ['tag1', 'tag2'],
       series: [{name: 'vivid'}, {name: 'wily'}]
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={changeState}
           key={item.storeId}
-          item={item} />);
-    output.props.children[3].props.children.props.children[1]
+          item={item}
+          colspan="two-col" />);
+    output.props.children[1].props.children[1].props.children[1]
         .props.onClick({stopPropagation: stopPropagation});
     assert.equal(changeState.callCount, 1);
     assert.equal(stopPropagation.callCount, 1);
@@ -449,7 +285,7 @@ describe('SearchResultsItem', function() {
   });
 
   it('gives the correct class names for charm list item', function() {
-    var item = {
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -463,20 +299,17 @@ describe('SearchResultsItem', function() {
       tags: ['tag1', 'tag2'],
       series: [{name: 'vivid'}, {name: 'wily'}]
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={sinon.stub()}
-          item={item} />);
+          item={item}
+          colspan="two-col" />);
 
-    var seriesClass = output.props.children[1].props.className;
-    var iconsClass = output.props.children[2].props.className;
-    assert.equal(seriesClass, 'series__column four-col');
-    assert.equal(iconsClass,
-      'charm-logos__column list-block__column one-col');
+    assert.equal(output.props.className, 'search-results__list-item charm two-col');
   });
 
   it('gives the correct class names for bundle list item', function() {
-    var item = {
+    const item = {
       name: 'mysql',
       displayName: 'mysql',
       special: true,
@@ -498,15 +331,12 @@ describe('SearchResultsItem', function() {
         iconPath: 'apache2.svg'
       }]
     };
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
         <juju.components.SearchResultsItem
           changeState={sinon.stub()}
-          item={item} />);
+          item={item}
+          colspan="two-col" />);
 
-    var seriesClass = output.props.children[1].props.className;
-    var iconsClass = output.props.children[2].props.className;
-    assert.equal(seriesClass, 'series__column two-col');
-    assert.equal(iconsClass,
-      'charm-logos__column list-block__column three-col');
+    assert.equal(output.props.className, 'search-results__list-item bundle two-col');
   });
 });

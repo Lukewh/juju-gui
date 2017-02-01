@@ -25,63 +25,68 @@ chai.config.truncateThreshold = 0;
 
 describe('SearchResultsSelectFilter', function() {
 
+  const changeState = sinon.stub();
+
   beforeAll(function(done) {
     // By loading this file it adds the component to the juju components.
     YUI().use('search-results-select-filter', function() { done(); });
   });
 
   it('can render a select filter', function() {
-    var changeState = sinon.stub();
-    var sortItems = [{
+    const sortItems = [{
       label: 'Most popular',
       value: '-downloads'
     }, {
       label: 'Least popular',
       value: 'downloads'
     }];
-    var output = jsTestUtils.shallowRender(
+    const output = jsTestUtils.shallowRender(
       <juju.components.SearchResultsSelectFilter
         changeState={changeState}
         label="Sort by"
         filter='sort'
         items={sortItems}
         currentValue={null} />);
-    assert.deepEqual(output,
-      <div className="list-block__sort">
-        {"Sort by"}:
-        <select onChange={output.props.children[2].props.onChange}
-          defaultValue={null}>
-            <option value="-downloads" key="-downloads">Most popular</option>
-            <option value="downloads" key="downloads">Least popular</option>
-        </select>
-      </div>);
+
+    const expected = <div className="search-results__sort">
+      {"Sort by"}:
+      <select onChange={output.props.children[2].props.onChange}
+              defaultValue={null}>
+        <option value="-downloads" key="-downloads">Most popular</option>
+        <option value="downloads" key="downloads">Least popular</option>
+      </select>
+    </div>;
+
+    assert.deepEqual(output, expected);
   });
 
   it('can select an option', function() {
-    var changeState = sinon.stub();
-    var sortItems = [{
+    const sortItems = [{
       label: 'Most popular',
       value: '-downloads'
     }, {
       label: 'Least popular',
       value: 'downloads'
     }];
-    var output = jsTestUtils.shallowRender(
+
+    const output = jsTestUtils.shallowRender(
       <juju.components.SearchResultsSelectFilter
         changeState={changeState}
         label="Sort by"
         filter='sort'
         items={sortItems}
         currentValue="downloads" />);
-    assert.deepEqual(output,
-      <div className="list-block__sort">
-        {"Sort by"}:
-        <select onChange={output.props.children[2].props.onChange}
-          defaultValue="downloads">
-            <option value="-downloads" key="-downloads">Most popular</option>
-            <option value="downloads" key="downloads">Least popular</option>
-        </select>
-      </div>);
+
+    const expected = <div className="search-results__sort">
+      {"Sort by"}:
+      <select onChange={output.props.children[2].props.onChange}
+              defaultValue="downloads">
+        <option value="-downloads" key="-downloads">Most popular</option>
+        <option value="downloads" key="downloads">Least popular</option>
+      </select>
+    </div>;
+
+    assert.deepEqual(output, expected);
   });
 
   it('can change the search state', function() {

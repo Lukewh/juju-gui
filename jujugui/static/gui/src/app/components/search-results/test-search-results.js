@@ -166,11 +166,11 @@ describe('SearchResults', function() {
     });
 
     it('can render the promulgated search results', function() {
-      var changeState = sinon.spy();
-      var getName = (val) => {
+      const changeState = sinon.spy();
+      const getName = (val) => {
         return val;
       };
-      var sortItems = [{
+      const sortItems = [{
         label: 'Default',
         value: ''
       }, {
@@ -192,7 +192,7 @@ describe('SearchResults', function() {
         label: 'Author (z-a)',
         value: '-owner'
       }];
-      var seriesItems = [{
+      const seriesItems = [{
         label: 'All',
         value: ''
       }, {
@@ -202,7 +202,7 @@ describe('SearchResults', function() {
         label: 'Wily Werewolf 15.10',
         value: 'wily'
       }];
-      var results = [{
+      const results = [{
         name: 'mysql-one',
         displayName: 'mysql-one',
         url: 'http://example.com/mysql-one',
@@ -243,7 +243,7 @@ describe('SearchResults', function() {
         storeId: '~test-owner/mysql-four',
         type: 'charm'
       }];
-      var mockData = [{
+      const mockData = [{
         toEntity: sinon.stub().returns(results[0])
       }, {
         toEntity: sinon.stub().returns(results[1])
@@ -252,9 +252,9 @@ describe('SearchResults', function() {
       }, {
         toEntity: sinon.stub().returns(results[3])
       }];
-      var charmstoreSearch = sinon.stub().callsArgWith(1, null, mockData);
-      var makeEntityModel = sinon.stub().returnsArg(0);
-      var shallowRenderer = jsTestUtils.shallowRender(
+      const charmstoreSearch = sinon.stub().callsArgWith(1, null, mockData);
+      const makeEntityModel = sinon.stub().returnsArg(0);
+      const shallowRenderer = jsTestUtils.shallowRender(
           <juju.components.SearchResults
             query="mysql"
             type="charm"
@@ -265,61 +265,62 @@ describe('SearchResults', function() {
             charmstoreSearch={charmstoreSearch}
             getName={getName}
             makeEntityModel={makeEntityModel} />, true);
-      var instance = shallowRenderer.getMountedInstance();
+      const instance = shallowRenderer.getMountedInstance();
       instance.componentDidMount();
-      var output = shallowRenderer.getRenderOutput();
-      var expected = (
+      const output = shallowRenderer.getRenderOutput();
+      const expected = (
         <div className="search-results">
-          <div className="row no-padding-top">
-            <div className="inner-wrapper list-block">
-              <div className="twelve-col list-block__title no-margin-bottom">
-                Your search for &lsquo;{"mysql"}&rsquo; returned {4}{' '}
-                results.
-              </div>
-              <div className="list-block__filters">
-                <juju.components.SearchResultsTypeFilter
-                  changeState={changeState}
-                  currentType="charm" />
-                <div className="six-col last-col">
-                  <div className="list-block__filters--selects">
-                    <form>
-                      <juju.components.SearchResultsSelectFilter
-                        changeState={changeState}
-                        label="Sort by"
-                        filter='sort'
-                        items={sortItems}
-                        currentValue="-name" />
-                      <juju.components.SearchResultsSelectFilter
-                        changeState={changeState}
-                        label="Series"
-                        filter='series'
-                        items={seriesItems}
-                        currentValue="wily" />
-                    </form>
-                  </div>
+          <div>
+            <div className="twelve-col search-results__title no-margin-bottom">
+              Your search for &lsquo;{"mysql"}&rsquo; returned {4}{' '}
+              results.
+            </div>
+            <div className="search-results__filters">
+              <juju.components.SearchResultsTypeFilter
+                changeState={changeState}
+                currentType="charm" />
+              <div className="six-col last-col">
+                <div className="search-results__filters-selects">
+                  <form>
+                    <juju.components.SearchResultsSelectFilter
+                      changeState={changeState}
+                      label="Sort by"
+                      filter='sort'
+                      items={sortItems}
+                      currentValue="-name" />
+                    <juju.components.SearchResultsSelectFilter
+                      changeState={changeState}
+                      label="Series"
+                      filter='series'
+                      items={seriesItems}
+                      currentValue="wily" />
+                  </form>
                 </div>
               </div>
-              <div className="entity-search-results">
-                <div>
-                  <h4>
-                    {"Recommended"}{' '}
-                    <span className="count">({2})</span>
-                  </h4>
-                  <ul className="list-block__list">
-                    <juju.components.SearchResultsItem
-                      changeState={changeState}
-                      key="~test-owner/mysql-one"
-                      item={results[0]} />
-                    <juju.components.SearchResultsItem
-                      changeState={changeState}
-                      key="~test-owner/mysql-two"
-                      item={results[1]} />
-                  </ul>
-                </div>
+            </div>
+            <div className="entity-search-results">
+              <div>
+                <h4>
+                  {"Recommended"}{' '}
+                  <span className="count">({2})</span>
+                </h4>
+                <ul className="search-results__list promulgated">
+                  <juju.components.SearchResultsItem
+                    changeState={changeState}
+                    key="~test-owner/mysql-one"
+                    item={results[0]}
+                    colspan="six-col" />
+                  <juju.components.SearchResultsItem
+                    changeState={changeState}
+                    key="~test-owner/mysql-two"
+                    item={results[1]}
+                    colspan="six-col" />
+                </ul>
               </div>
             </div>
           </div>
         </div>);
+
       assert.deepEqual(output, expected);
     });
   });

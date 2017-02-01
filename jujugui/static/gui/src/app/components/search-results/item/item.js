@@ -76,10 +76,11 @@ YUI.add('search-results-item', function(Y) {
       @returns {String} The generated element.
      */
     _generateIcon: function(application) {
+      console.log(application);
       const staticIconPath ='static/gui/build/app/assets/images/non-sprites/charm_160.svg';
       return <img src={application.iconPath || staticIconPath}
                   className="list-icons__image charm__logo"
-                  alt={application.display_name + ' icon'} />;
+                  alt={application.displayName + ' icon'} />;
     },
 
     /**
@@ -106,7 +107,7 @@ YUI.add('search-results-item', function(Y) {
 
         applications.forEach(function(application) {
           imageList.push(
-            <li className="icon-list__item" key={application.name}>
+            <li className="icon-list__item" key={application.id}>
               {this._generateIcon(application)}
             </li>);
         }.bind(this));
@@ -161,28 +162,10 @@ YUI.add('search-results-item', function(Y) {
         }
 
         const multiSeries = series.length > 1 ? ` +${series.length - 1}` : ``;
-
         ele = <p>Works on: {name}{multiSeries}</p>;
-
       }
 
       return ele;
-      // var components = [];
-      // // Prevent layouts from collapsing due to empty content.
-      // if (series.length === 0) {
-      //   return <li>&nbsp;</li>;
-      // }
-      // series.forEach(function(singleSeries) {
-      //   components.push(
-      //     <li className="list-series__item"
-      //       key={singleSeries.name}>
-      //       <a onClick={this._handleItemClick.bind(this, singleSeries.storeId)}>
-      //         {singleSeries.name}
-      //       </a>
-      //     </li>
-      //   );
-      // }, this);
-      // return components;
     },
 
     /**
@@ -316,43 +299,6 @@ YUI.add('search-results-item', function(Y) {
             <a href="" className="button--inline-neutral">Add to canvas</a>
           </div>
         </li>);
-      // return (
-      //   <li className={'list-block__list--item ' + item.type}
-      //       tabIndex="0" role="button"
-      //       onClick={this._handleItemClick.bind(this, item.id)}>
-      //     <div className="four-col charm-name__column">
-      //       <h3 className="list-block__list--item-title">
-      //         {item.displayName}
-      //         {this._generateSpecialFlag()}
-      //       </h3>
-      //       <ul className="tag-list">
-      //         {this._generateTagList()}
-      //       </ul>
-      //     </div>
-      //     <div className={this._generateSeriesClass()}>
-      //       <ul className="list-series">
-      //         {this._generateSeriesList()}
-      //       </ul>
-      //     </div>
-      //     <div className={this._generateCharmsClass()}>
-      //       <ul className="list-icons clearfix">
-      //         {this._generateIconList()}
-      //       </ul>
-      //     </div>
-      //     <div className={
-      //       'prepend-one two-col owner__column list-block__column last-col'}>
-      //       <p className="cell">
-      //         {'By '}
-      //         <span className="link"
-      //           onClick={this._handleOwnerClick.bind(this, item.owner)}
-      //           role="button"
-      //           tabIndex="0">
-      //           {item.owner}
-      //         </span>
-      //       </p>
-      //     </div>
-      //   </li>
-      // );
     }
   });
 

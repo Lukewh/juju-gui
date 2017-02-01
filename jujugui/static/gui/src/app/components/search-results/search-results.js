@@ -158,8 +158,6 @@ YUI.add('search-results', function(Y) {
         return;
       }
 
-      console.log(rawResults);
-
       var results = rawResults.map(function(result) {
         var model = this.props.makeEntityModel(result);
         return model.toEntity();
