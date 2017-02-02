@@ -253,8 +253,6 @@
   }
 
   &__list-item.three-col {
-    max-width: 16rem;
-
     .search-results__details {
       height: 104px;
     }
@@ -280,7 +278,7 @@
     }
 
     &:nth-child(4n+0) {
-      //margin-right: 0;
+      margin-right: 0;
     }
   }
 }
@@ -379,11 +377,8 @@ ul.bullets {
   }
 }
 .tag-list--item {
-  @extend %hover-state;
   margin: 0 10px 0 0;
-  color: $warm-grey;
   display: inline-block;
-  text-transform: lowercase;
 
   a:link,
   a:visited {

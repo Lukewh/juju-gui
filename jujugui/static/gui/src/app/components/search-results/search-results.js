@@ -360,13 +360,13 @@ YUI.add('search-results', function(Y) {
           seriesItems = seriesItems.concat(seriesMap);
           state.activeChild = {
             component:
-              <div>
+              <div className="inner-wrapper">
                 {this._generateResultsMessage(data.text, data.solutionsCount)}
                 <div className="search-results__filters">
                   <juju.components.SearchResultsTypeFilter
                     changeState={this.props.changeState}
                     currentType={currentType} />
-                  <div className="six-col last-col">
+                  <div className="seven-col last-col">
                     <div className="search-results__filters-selects">
                       <form>
                         <juju.components.SearchResultsSelectFilter
@@ -462,8 +462,10 @@ YUI.add('search-results', function(Y) {
       if (text) {
         return (
           <div className="twelve-col search-results__title no-margin-bottom">
-            Your search for &lsquo;{text}&rsquo; returned {solutionsCount}{' '}
-            results.
+            <div className="inner-wrapper">
+              Your search for &lsquo;{text}&rsquo; returned {solutionsCount}{' '}
+              results.
+            </div>
           </div>
         );
       }

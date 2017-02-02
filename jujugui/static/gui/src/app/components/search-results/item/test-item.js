@@ -56,6 +56,10 @@ describe('SearchResultsItem', function() {
 
     const itemClick = output.props.onClick;
     const ownerClick = output.props.children[1].props.children[1].props.children[1].props.onClick;
+    const tagClicks = [
+      output.props.children[1].props.children[3].props.children[0].props.onClick,
+      output.props.children[1].props.children[3].props.children[1].props.onClick
+    ];
 
     const expected = (
       <li className="search-results__list-item charm two-col"
@@ -76,6 +80,18 @@ describe('SearchResultsItem', function() {
           </p>
           <p>Works on: {'vivid'}{' +1'}
           </p>
+          <ul className="tag-list">
+            <li className="tag-list--item link"
+                key={'tag10'}
+                role="button" tabIndex="0"
+                onClick={tagClicks[0]}>
+                {'tag1'}</li>
+              <li className="tag-list--item link"
+                  key={'tag21'}
+                  role="button" tabIndex="0"
+                  onClick={tagClicks[1]}>
+                  {'tag2'}</li>
+          </ul>
         </div>
         <div className="search-results__action three-col last-col">
           <a href="" className="button--inline-neutral">

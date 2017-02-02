@@ -42,7 +42,7 @@ YUI.add('search-results-item', function() {
       }
       tags.forEach(function(tag, i) {
         components.push(
-          <li className="tag-list--item"
+          <li className="tag-list--item link"
               key={tag + i}
               role="button" tabIndex="0"
               onClick={this._handleTagClick.bind(this, tag)}>
