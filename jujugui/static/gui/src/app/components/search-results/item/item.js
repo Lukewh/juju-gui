@@ -29,6 +29,33 @@ YUI.add('search-results-item', function() {
     },
 
     /**
+     Generate the elements for the tag list.
+
+     @method _generateTagList
+     @returns {String} The generated elements.
+     */
+    _generateTagList: function() {
+      const components = [];
+      const tags = this.props.item.tags || [];
+      if (tags.length === 0) {
+        return <span>{' '}</span>;
+      }
+      tags.forEach(function(tag, i) {
+        components.push(
+          <li className="tag-list--item"
+              key={tag + i}
+              role="button" tabIndex="0"
+              onClick={this._handleTagClick.bind(this, tag)}>
+              {tag}
+          </li>
+        );
+      }, this);
+      return <ul className="tag-list">
+        {components}
+        </ul>;
+    },
+
+    /**
       Generate single element for an icon
 
       @method _generateIcon
@@ -215,6 +242,7 @@ YUI.add('search-results-item', function() {
             </h3>
             {this._generateOwner()}
             {this._generateSeriesList()}
+            {this._generateTagList()}
           </div>
           <div className="search-results__action three-col last-col">
             <a href="" className="button--inline-neutral">Add to canvas</a>
