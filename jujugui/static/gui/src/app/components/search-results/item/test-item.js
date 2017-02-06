@@ -146,6 +146,7 @@ describe('SearchResultsItem', function() {
             By&nbsp;<span className="link" role="button" tabIndex="0" onClick={ownerClick}>test-owner</span>
           </p>
           {''}
+          <span>{' '}</span>
         </div>
         <div className="search-results__action three-col last-col">
           <a href="" className="button--inline-neutral">
@@ -216,6 +217,7 @@ describe('SearchResultsItem', function() {
             By&nbsp;<span className="link" role="button" tabIndex="0" onClick={ownerClick}>test-owner</span>
           </p>
           {''}
+          <span>{' '}</span>
         </div>
         <div className="search-results__action three-col last-col">
           <a href="" className="button--inline-neutral">
