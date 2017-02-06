@@ -270,7 +270,7 @@ describe('SearchResults', function() {
       const output = shallowRenderer.getRenderOutput();
       const expected = (
         <div className="search-results">
-          <div>
+          <div className="inner-wrapper">
             <div className="twelve-col search-results__title no-margin-bottom">
               Your search for &lsquo;{"mysql"}&rsquo; returned {4}{' '}
               results.
@@ -279,7 +279,7 @@ describe('SearchResults', function() {
               <juju.components.SearchResultsTypeFilter
                 changeState={changeState}
                 currentType="charm" />
-              <div className="six-col last-col">
+              <div className="seven-col last-col">
                 <div className="search-results__filters-selects">
                   <form>
                     <juju.components.SearchResultsSelectFilter

@@ -37,7 +37,7 @@ describe('SearchResultsTypeFilter', function() {
         changeState={changeState}
         currentType={null} />);
 
-    const expected = <nav className="six-col">
+    const expected = <nav className="five-col">
       <ul className="tab-list">
         <li className="is-selected tab-list__item"
             onClick={output.props.children.props.children[0].props.onClick}
@@ -70,7 +70,7 @@ describe('SearchResultsTypeFilter', function() {
         changeState={changeState}
         currentType='bundle' />);
 
-    const expected = <nav className="six-col">
+    const expected = <nav className="five-col">
       <ul className="tab-list">
         <li className=" tab-list__item"
             onClick={output.props.children.props.children[0].props.onClick}

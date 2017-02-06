@@ -462,10 +462,8 @@ YUI.add('search-results', function(Y) {
       if (text) {
         return (
           <div className="twelve-col search-results__title no-margin-bottom">
-            <div className="inner-wrapper">
-              Your search for &lsquo;{text}&rsquo; returned {solutionsCount}{' '}
+            Your search for &lsquo;{text}&rsquo; returned {solutionsCount}{' '}
               results.
-            </div>
           </div>
         );
       }
