@@ -69,6 +69,10 @@
     // to hide the loading model message.
     @include visible($delay: .5s);
 
+    svg {
+      fill: none;
+    }
+
     &--disabled {
       @include hidden;
     }

@@ -52,7 +52,6 @@ YUI.add('header-logo', function() {
     */
     _svg: function() {
       return (<juju.components.SvgIcon name="juju-logo"
-        className="svg-icon"
         width="90" height="35" />);
     },
 
