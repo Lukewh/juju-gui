@@ -44,8 +44,29 @@
 
   &.is-pending {
     .service-block {
-      stroke: $service-pending;
+      stroke: lighten($color-warning, 20%);
+    }
+    .service-block-spinner {
+      transform: rotate(-90deg);
+      transform-origin: 95px 95px;
+      animation-name: spin;
+      animation-duration: 3000ms;
+      animation-iteration-count: infinite;
+      animation-timing-function: easeInOutQuad;
+      stroke: $color-warning;
       stroke-width: 3;
+    }
+
+    @keyframes spin {
+      0% {
+        stroke-dasharray: 0 566;
+      } 50% {
+        transform: rotate(-90deg);
+        stroke-dasharray: 566 566;
+      } 100% {
+        transform: rotate(270deg);
+        stroke-dasharray: 0 566;
+      }
     }
   }
 

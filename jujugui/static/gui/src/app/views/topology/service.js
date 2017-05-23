@@ -1685,6 +1685,22 @@ YUI.add('juju-topology-service', function(Y) {
         })
         .classed('service-block', true);
 
+      node.append('circle')
+        .attr({
+          cx: function(d) {
+            return (d.subordinate ? 65 : 95);
+          },
+          cy: function(d) {
+            return (d.subordinate ? 65 : 95);
+          },
+          r: function(d) {
+            return (d.subordinate ? 60 : 90);
+          },
+          'stroke-width': 1,
+          stroke: '#888888'
+        })
+        .classed('service-block-spinner', true);
+
       node.append('image')
        .classed('service-icon', true)
        .attr({
