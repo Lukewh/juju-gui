@@ -21,9 +21,13 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 YUI.add('search-results', function(Y) {
 
   juju.components.SearchResults = React.createClass({
+    displayName: 'SearchResults',
+
     propTypes: {
+      acl: React.PropTypes.object.isRequired,
       changeState: React.PropTypes.func.isRequired,
       charmstoreSearch: React.PropTypes.func.isRequired,
+      deployTarget: React.PropTypes.func.isRequired,
       getName: React.PropTypes.func.isRequired,
       makeEntityModel: React.PropTypes.func.isRequired,
       owner: React.PropTypes.string,
@@ -228,7 +232,11 @@ YUI.add('search-results', function(Y) {
       }
       this._changeActiveComponent('loading');
       this.setState({ waitingForSearch: true });
-
+      // If there is an existing search request then abort it before starting
+      // the new search.
+      if (this.searchXhr) {
+        this.searchXhr.abort();
+      }
       this.searchXhr = this.props.charmstoreSearch(
         filters,
         this.searchCallback,
@@ -485,9 +493,11 @@ YUI.add('search-results', function(Y) {
         <ul className="list-block__list">
           {promulgated.map(item =>
             <juju.components.SearchResultsItem
+              acl={this.props.acl}
               changeState={this.props.changeState}
-              key={item.storeId}
-              item={item} />)}
+              deployTarget={this.props.deployTarget}
+              item={item}
+              key={item.storeId} />)}
         </ul>
       </div>);
     },
@@ -533,9 +543,11 @@ YUI.add('search-results', function(Y) {
           <ul className="list-block__list">
             {community.map(item =>
               <juju.components.SearchResultsItem
+                acl={this.props.acl}
                 changeState={this.props.changeState}
-                key={item.storeId}
-                item={item} />)}
+                deployTarget={this.props.deployTarget}
+                item={item}
+                key={item.storeId} />)}
           </ul>
         </div>
       </div>);
