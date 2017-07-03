@@ -1854,6 +1854,11 @@ YUI.add('juju-gui', function(Y) {
         document.getElementById('modal-gui-settings'));
     },
 
+    _clearPostDeployment: function() {
+      ReactDOM.unmountComponentAtNode(
+        document.getElementById('post-deployment'));
+    },
+
     /**
       Handles rendering and/or updating the machine UI component.
       @param {Object} state - The app state.
@@ -2303,6 +2308,7 @@ YUI.add('juju-gui', function(Y) {
             failureNotification(error);
           } else {
             this.bundleImporter.importBundleYAML(bundleYAML);
+            this._renderPostDeployment(entityId);
           }
         });
       } else {
@@ -2937,6 +2943,16 @@ YUI.add('juju-gui', function(Y) {
       }
     },
 
+    _renderPostDeployment: function (entityId) {
+      ReactDOM.render(
+        <window.juju.components.PostDeployment
+          closeModal={this._clearPostDeployment.bind(this)}
+          entityId={entityId}
+          renderMarkdown={marked} />,
+          document.getElementById('post-deployment')
+        );
+    },
+
     /**
       Show the environment view.
       @param {Object} state - The application state.
@@ -3171,6 +3187,7 @@ YUI.add('juju-gui', function(Y) {
     'modal-shortcuts',
     'notification-list',
     'panel-component',
+    'post-deployment',
     'sharing',
     'svg-icon',
     'user-menu',

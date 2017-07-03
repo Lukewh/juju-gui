@@ -97,6 +97,8 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       <div id="zoom-container"></div>
 
+      <div id="post-deployment"></div>
+
       <div id="full-screen-mask">
         <div id="browser-warning" class="centered-column"
             style="display:none;">

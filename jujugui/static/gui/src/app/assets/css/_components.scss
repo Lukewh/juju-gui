@@ -1,5 +1,7 @@
 // Components
 
+@import '../../components/accordion/accordion';
+@import '../../components/accordion/accordion-item/accordion-item';
 @import '../../components/account/account';
 @import '../../components/account/credentials/credentials';
 @import '../../components/account/payment/payment';
@@ -99,6 +101,7 @@
 @import '../../components/notification-list/item/item';
 @import '../../components/panel/panel';
 @import '../../components/popup/popup';
+@import '../../components/post-deployment/post-deployment';
 @import '../../components/search-results/search-results';
 @import '../../components/sharing/sharing';
 @import '../../components/spinner/spinner';

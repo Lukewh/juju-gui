@@ -19,6 +19,14 @@
     height: auto;
   }
 
+  &--right {
+    width: 400px;
+    left: auto;
+    right: 20px;
+    top: 160px;
+    bottom: 140px;
+  }
+
   .bordered {
     border-bottom: 1px solid $light-mid-grey;
     padding: 20px;
