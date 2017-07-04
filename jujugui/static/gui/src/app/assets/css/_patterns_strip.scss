@@ -1,0 +1,24 @@
+@mixin strip {
+  background-color: transparent;
+  clear: both;
+  width: 100%;
+}
+
+// Full width strip pattern
+@mixin vf-p-strip {
+
+  .p-strip {
+    @include strip;
+
+    &--light {
+      @include strip;
+      background-color: $color-light;
+    }
+
+    &--dark {
+      @include strip;
+      background-color: $color-dark;
+      color: $color-x-light;
+    }
+  }
+}

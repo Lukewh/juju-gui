@@ -1,0 +1,50 @@
+.post-deployment {
+  @include vf-p-strip;
+
+  &__title {
+    padding: 20px;
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+
+  .content {
+    counter-reset:li; /* Initiate a counter */
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    p, li {
+      font-size: 0.875rem;
+    }
+
+    ol {
+      margin-left: 25px;
+      li {
+        list-style: none;
+        position: relative;
+
+        &:before {
+          content: counter(li)'.';
+          counter-increment: li;
+          display: block;
+          position: absolute;
+          left: -25px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    hr {
+      border-bottom-color: #cdcdcd;
+      border-top: 0 none;
+      margin: 20px 0;
+    }
+  }
+}
