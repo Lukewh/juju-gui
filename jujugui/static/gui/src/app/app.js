@@ -1346,6 +1346,11 @@ YUI.add('juju-gui', function(Y) {
       const charmstore = this.get('charmstore');
       const isLoggedIn = () => this.controllerAPI.userIsAuthenticated;
       ReactDOM.render(
+        <window.juju.components.DeploymentFlow2 />,
+        document.getElementById('deployment-container')
+      );
+      return;
+      ReactDOM.render(
         <window.juju.components.DeploymentFlow
           acl={this.acl}
           addAgreement={this.terms.addAgreement.bind(this.terms)}
@@ -3280,6 +3285,7 @@ YUI.add('juju-gui', function(Y) {
     'charmbrowser-component',
     'deployment-bar',
     'deployment-flow',
+    'deployment-flow2',
     'deployment-signup',
     'env-size-display',
     'header-breadcrumb',
