@@ -1,6 +1,6 @@
 .deployment-flow2-panel {
   background: #F7F7F7;
-  
+
   .deployment-panel {
     &__header {
       padding-bottom: 0;
@@ -9,6 +9,13 @@
       left: 0;
       right: 0;
       box-shadow: 0 0 .5rem rgba(0,0,0,0.2);
+      background: $white;
+      z-index: 10;
+      height: 61px;
+
+      &--dark {
+        background-color: #002835;
+      }
 
       &-logo {
         float: left;

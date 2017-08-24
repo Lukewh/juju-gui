@@ -5,11 +5,22 @@
 YUI.add('deployment-flow2-model-name', function() {
   class ModelName extends juju.components.Section {
     constructor(props) {
-      super(props, {}, 'modelName');
+      super(props, {modelName: 'my-model'}, 'modelName');
+    }
+
+    _setName() {
+      this.setState({
+        modelName: this.modelNameInput.valueOf().value
+      });
+      this._completeSection();
     }
 
     _generateHeaderContent() {
-      return (<span>Model name</span>);
+      if (this.state.isComplete) {
+        return (<span>Deploying {this.state.modelName} &bull; Signed in as cassiocassio</span>);
+      } else {
+        return (<span>Model name</span>);
+      }
     }
 
     _generateLoggedOut() {
@@ -25,7 +36,7 @@ YUI.add('deployment-flow2-model-name', function() {
           <p>Don't have an account? <a href="">Sign up</a></p>
 
           <button className="button--inline-positive right"
-            onClick={this._completeSection.bind(this)}>Login</button>
+            onClick={this.props.login.bind(this)}>Login</button>
         </div>);
     }
 
@@ -37,11 +48,13 @@ YUI.add('deployment-flow2-model-name', function() {
           </a></p>
 
           <button className="button--inline-positive right"
-            onClick={this._completeSection.bind(this)}>Name model</button>
+            onClick={this._setName.bind(this)}>Name model</button>
         </div>);
     }
 
     render() {
+      const content = this.props.isLoggedIn ?
+        this._generateLoggedIn() : this._generateLoggedOut();
       return super.render(
         <div>
           <div className="six-col">
@@ -50,22 +63,24 @@ YUI.add('deployment-flow2-model-name', function() {
 
             <div className="p-form-validation">
               <input className="p-form-validation__input"
-                type="text" defaultValue="my-model" />
+                type="text" defaultValue={this.state.modelName} ref={(input) => {this.modelNameInput = input}} />
               <p className="p-form-validation__message">
                 Lower case letters, numbers and hyphens (-) only
               </p>
             </div>
           </div>
           <div className="six-col last-col">
-            {this._generateLoggedOut()}
-            {this._generateLoggedIn()}
+            {content}
           </div>
         </div>
       );
     }
   }
 
-  ModelName.propTypes = {};
+  ModelName.propTypes = {
+    login: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired
+  };
 
   juju.components.ModelName = ModelName;
 }, '0.1.0', {

@@ -13,7 +13,14 @@ YUI.add('deployment-flow2-deploy', function() {
     }
 
     render() {
-      return super.render(<div>Deploy</div>);
+      return super.render(<div>
+        <h2><juju.components.SvgIcon name="complete"
+          width="16" /> Agree to terms and deploy</h2>
+
+        <input type="checkbox" /> Please email me updates regarding feature announcements, performance suggestions, feedback surveys and special offers.
+        <input type="checkbox" defaultChecked /> I agree that my use of any service and related APIs is subject to my compliance with the applicable <a href="">Terms of service</a>
+        <button className="button--positive">Deploy</button>
+      </div>);
     }
   }
 

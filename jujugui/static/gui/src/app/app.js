@@ -1346,7 +1346,19 @@ YUI.add('juju-gui', function(Y) {
       const charmstore = this.get('charmstore');
       const isLoggedIn = () => this.controllerAPI.userIsAuthenticated;
       ReactDOM.render(
-        <window.juju.components.DeploymentFlow2 />,
+        <window.juju.components.DeploymentFlow2
+          addNotification={db.notifications.add.bind(db.notifications)}
+          changeState={this.state.changeState.bind(this.state)}
+          ddData={ddData}
+          generatePath={this.state.generatePath.bind(this.state)}
+          getDiagramURL={charmstore.getDiagramURL.bind(charmstore)}
+          getEntity={charmstore.getEntity.bind(charmstore)}
+          getGithubSSHKeys={window.jujugui.sshKeys.githubSSHKeys}
+          makeEntityModel={Y.juju.makeEntityModel}
+          renderMarkdown={marked}
+          setPageTitle={this.setPageTitle.bind(this)}
+          WebHandler={Y.juju.environments.web.WebHandler}
+        />,
         document.getElementById('deployment-container')
       );
       return;

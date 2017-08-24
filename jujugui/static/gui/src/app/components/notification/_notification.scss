@@ -82,6 +82,11 @@ $sp-large: 2rem;
   }
 }
 
+.p-notification--information {
+  @include notification;
+  border-color: $link-blue;
+}
+
 // Caution notification styling
 .p-notification--caution {
   @include notification;

@@ -33,13 +33,13 @@ YUI.add('deployment-flow2-cloud', function() {
       return (
         <div className="deployment-flow2-cloud__list">
           <div className="four-col">
-            <div className="p-card--highlighted is-disabled">
+            <div className="p-card--highlighted"
+              onClick={this._selectCloud.bind(this, 'aws')}>
               <juju.components.SvgIcon name="complete" size="16" /> AWS
             </div>
           </div>
           <div className="four-col">
-            <div className="p-card--highlighted"
-              onClick={this._selectCloud.bind(this, 'gce')}>
+            <div className="p-card--highlighted is-disabled">
               <juju.components.SvgIcon name="complete" size="16" /> GCE
             </div>
           </div>
@@ -57,11 +57,16 @@ YUI.add('deployment-flow2-cloud', function() {
     }
 
     _renderCredentialsSection() {
-      return (
-        <juju.components.Credentials
-          completeSection={this._completeSection.bind(this)}
-          selectedCloud={this.state.selectedCloud}
-          switchView={this._switchView.bind(this)} />);
+      if (this.state.selectedCloud) {
+        return (
+          <juju.components.Credentials
+            completeSection={this._completeSection.bind(this)}
+            getGithubSSHKeys={this.props.getGithubSSHKeys}
+            selectedCloud={this.state.selectedCloud}
+            switchView={this._switchView.bind(this)}
+            WebHandler={this.props.WebHandler} />);
+      }
+      return null;
     }
 
     render() {
@@ -72,7 +77,10 @@ YUI.add('deployment-flow2-cloud', function() {
     }
   }
 
-  Cloud.propTypes = {};
+  Cloud.propTypes = {
+    getGithubSSHKeys: PropTypes.func.isRequired,
+    WebHandler: PropTypes.func.isRequired
+  };
 
   juju.components.Cloud = Cloud;
 }, '0.1.0', {
