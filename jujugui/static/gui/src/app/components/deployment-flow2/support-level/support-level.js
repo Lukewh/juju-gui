@@ -22,11 +22,9 @@ YUI.add('deployment-flow2-support-level', function() {
     }
 
     setSupport(cost) {
-      console.log(cost);
       this.setState({
         supportLevel: parseInt(cost)
       });
-      console.log(this.state.supportLevel);
       this.props.setEstimatedCost('supportLevel', cost);
     }
 
@@ -36,7 +34,7 @@ YUI.add('deployment-flow2-support-level', function() {
           Support level &bull; Application plans
         </span>
         <span className="deployment-flow2__section-header-right">
-          ${this.props.getEstimatedCost()}
+          ${this._getTotalSupportCost().toFixed(2)}
         </span>
       </span>);
     }
@@ -71,7 +69,7 @@ YUI.add('deployment-flow2-support-level', function() {
       return (
         parseInt(this.state.supportPlans[charm].plan) *
         parseInt(this.state.supportPlans[charm].amount)
-      ).toFixed(2);
+      );
     }
 
     _updateSupportPlan(charm, plan) {
@@ -98,6 +96,15 @@ YUI.add('deployment-flow2-support-level', function() {
         supportPlans: supportPlans
       });
       this._estimateCost();
+    }
+
+    _getTotalSupportCost() {
+      let cost =  parseInt(this.state.supportLevel);
+      Object.keys(this.state.supportPlans).forEach(charm => {
+        cost += this._getTotalPlanCost(charm);
+      });
+
+      return cost;
     }
 
     _generateApplicationPlans() {
@@ -149,7 +156,7 @@ YUI.add('deployment-flow2-support-level', function() {
               <p><a href="">Usage history</a></p>
             </div>
             <div className="support-plan-row__total">
-              ${this._getTotalPlanCost.call(this, 'charm1')}
+              ${this._getTotalPlanCost.call(this, 'charm1').toFixed(2)}
             </div>
           </div>
           <h3>Unmetered applications</h3>

@@ -14,7 +14,7 @@ YUI.add('deployment-flow2-jaas-hosting', function() {
           JAAS hosting
         </span>
         <span className="deployment-flow2__section-header-right">
-          ${this.props.getEstimatedCost()}
+          $25.50
         </span>
       </span>);
     }
@@ -25,7 +25,7 @@ YUI.add('deployment-flow2-jaas-hosting', function() {
           width="16" /> JAAS hosting costs</h2>
         <p>Canonical hosts and manages the Juju controllers that run your model.
           <em>$0.005 per machine-hour</em></p>
-        ${this.props.getEstimatedCost()}
+        $25.20
         <button className="button--positive"
           onClick={this._completeSection.bind(this)}>Next</button>
       </div>);
@@ -33,7 +33,6 @@ YUI.add('deployment-flow2-jaas-hosting', function() {
   }
 
   JaasHosting.propTypes = {
-    getEstimatedCost: PropTypes.func
   };
 
   juju.components.JaasHosting = JaasHosting;

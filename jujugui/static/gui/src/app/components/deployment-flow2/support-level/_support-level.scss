@@ -1,0 +1,14 @@
+.support-plan-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  &__charm {
+    width: 20%;
+  }
+  
+  &__plan,
+  &__amount {
+    width: 34%;
+  }
+}

@@ -42,7 +42,7 @@ class DeploymentFlow2 extends React.Component {
   setEstimatedCost(name, cost) {
     let estimatedCost = this.state.estimatedCost;
 
-    estimatedCost[name] = cost;
+    estimatedCost[name] = parseInt(cost);
 
     this.setState({
       estimatedCost: estimatedCost
@@ -243,8 +243,7 @@ class DeploymentFlow2 extends React.Component {
           isOpen={openSection === 'jaasHosting'}
           isVisited={this.state.visitedSections.includes('jaasHosting')}
           goToVisitedSection={this._goToVisitedSection.bind(this)}
-          completeSection={this._completeSection.bind(this)}
-          getEstimatedCost={this.getEstimatedCost.bind(this)} />
+          completeSection={this._completeSection.bind(this)} />
         <juju.components.Total
           isComplete={this.state.completeSections.includes('total')}
           isOpen={openSection === 'total'}
