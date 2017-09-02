@@ -292,12 +292,11 @@ class DeploymentFlow2 extends React.Component {
           completeSection={this._completeSection.bind(this)}
           termsAgreed={this.state.termsAgreed}
           setState={this._setState.bind(this)} />
-        <div className="deployment-flow2__section is-visited">
+        <div className="deployment-flow2__section is-visited back-to-model">
           <div className="deployment-flow2__section-header clearfix"
             onClick={this._handleClose.bind(this)}>
-            <div className="inner-wrapper back-to-model">
-              <juju.components.SvgIcon name="chevron_up_16" size="16" />
-              &nbsp;Back to <b>{this.state.modelName}</b>
+            <div className="inner-wrapper">
+              Back to <b>{this.state.modelName}</b>
             </div>
           </div>
         </div>
