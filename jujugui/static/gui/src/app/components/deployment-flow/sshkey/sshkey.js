@@ -33,8 +33,8 @@ class DeploymentSSHKey extends React.Component {
     if (evt.which === 13) {
       this._handleAddMoreKeys(null);
     }
-    const hasValue = (this.refs.sshKey && this.refs.sshKey.getValue()) ||
-      (this.refs.githubUsername && this.refs.githubUsername.getValue());
+    const hasValue = (this.sshKey && this.sshKey.value) ||
+      (this.githubUsername && this.githubUsername.value)
     this.setState({
       buttonDisabled: hasValue ? false : true
     });
@@ -111,8 +111,8 @@ class DeploymentSSHKey extends React.Component {
     });
     this.props.setSSHKeys(SSHkeys);
     this.setState({SSHkeys: SSHkeys, buttonDisabled: true});
-    this.refs.githubUsername.setValue(null);
-    this.refs.githubUsername.focus();
+    this.githubUsername.value = '';
+    this.githubUsername.focus();
   }
 
   /**
@@ -122,17 +122,17 @@ class DeploymentSSHKey extends React.Component {
     if (this.state.buttonDisabled) {
       return;
     }
-    const source = this.refs.sshSource.getValue();
+    const source = this.sshSource.value;
     this.setState({error: null});
     if (source === 'github') {
-      const githubUsername = this.refs.githubUsername.getValue();
+      const githubUsername = this.githubUsername.value;
       this.props.getGithubSSHKeys(
         new this.props.WebHandler,
         githubUsername,
         this._addGithubKeysCallback.bind(this)
       );
     } else if (source === 'manual') {
-      const manualKey = this.refs.sshKey.getValue();
+      const manualKey = this.sshKey.value;
       const key = this._validateAndSplitKey(manualKey);
       if (key) {
         this.props.setSSHKeys([key]);
@@ -141,8 +141,8 @@ class DeploymentSSHKey extends React.Component {
           SSHkeys.push(key);
         }
         this.setState({SSHkeys: SSHkeys, buttonDisabled: true});
-        this.refs.sshKey.setValue(null);
-        this.refs.sshKey.focus();
+        this.sshKey.value = '';
+        this.sshKey.focus();
       }
     }
   }
@@ -151,7 +151,7 @@ class DeploymentSSHKey extends React.Component {
     Handle source change.
   */
   _handleSourceChange() {
-    const source = this.refs.sshSource.getValue();
+    const source = this.sshSource.value;
     this.setState({addSource: source, buttonDisabled: true});
   }
 
@@ -237,11 +237,10 @@ class DeploymentSSHKey extends React.Component {
     if (this.state.addSource === 'github') {
       return (
         <div className="three-col last-col no-margin-bottom">
-          <juju.components.GenericInput
+          <juju.components.DfInput
             label="GitHub username"
-            key="githubUsername"
-            ref="githubUsername"
-            multiLine={false}
+            id="githubUsername"
+            parentRef={(ele) => {this.githubUsername = ele}}
             onKeyUp={this._onKeyUp.bind(this)}
           />
         </div>
@@ -249,11 +248,10 @@ class DeploymentSSHKey extends React.Component {
     } else if (this.state.addSource === 'manual') {
       return (
         <div className="seven-col no-margin-bottom">
-          <juju.components.GenericInput
+          <juju.components.DfInput
             label="Enter your SSH key (typically found at ~/.ssh/id_rsa.pub)"
-            key="sshKey"
-            ref="sshKey"
-            multiLine={true}
+            id="sshKey"
+            parentRef={(ele) => {this.sshKey = ele}}
             onKeyUp={this._onKeyUp.bind(this)}
           />
         </div>
@@ -273,7 +271,7 @@ class DeploymentSSHKey extends React.Component {
       <juju.components.GenericButton
         action={this._handleAddMoreKeys.bind(this)}
         disabled={disabled}
-        type="positive">
+        type="neutral">
         {title}
       </juju.components.GenericButton>
     </div>);
@@ -339,14 +337,15 @@ class DeploymentSSHKey extends React.Component {
         {message}
         {this._generateAddedKeys()}
         {this._generateError()}
-        <div className="twelve-col no-margin-bottom">
+        <div className="twelve-col">
           <div className="three-col no-margin-bottom">
-            <juju.components.InsetSelect
-              ref="sshSource"
-              disabled={false}
+            <juju.components.DfSelect
               label="Source"
+              id="sshSource"
+              parentRef={(ele) => {this.sshSource = ele}}
               onChange={this._handleSourceChange.bind(this)}
-              options={this._generateSourceOptions()} />
+              options={this._generateSourceOptions()}
+            />
           </div>
           {this._generateAddKey()}
           {this._generateAddKeyButton()}
@@ -368,6 +367,8 @@ YUI.add('deployment-ssh-key', function() {
   juju.components.DeploymentSSHKey = DeploymentSSHKey;
 }, '0.1.0', {
   requires: [
+    'deployment-flow2-df-input',
+    'deployment-flow2-df-select',
     'inset-select',
     'notification',
     'generic-input',

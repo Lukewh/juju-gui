@@ -5,22 +5,21 @@
 YUI.add('deployment-flow2-cloud', function() {
   class Cloud extends juju.components.Section {
     constructor(props) {
-      const state = {
-        selectedCloud: null,
-        hasCredentials: null,
-        view: 'clouds'
-      };
-      super(props, state, 'cloud');
+      super(props, {}, 'cloud');
     }
 
     _generateHeaderContent() {
+      if (this.props.selectedCredentials) {
+          return(<span>Cloud: <b>AWS</b> &bull; Credentials <b>{this.props.selectedCredentials}</b> &bull; Machines: <b>7</b></span>);
+      }
       return (<span>Cloud</span>)
     }
 
     _selectCloud(cloud) {
-      this.setState({
+      this.props.setState({
         selectedCloud: cloud
       });
+      this._switchView();
     }
 
     _switchView() {
@@ -31,38 +30,72 @@ YUI.add('deployment-flow2-cloud', function() {
 
     _renderCloudSelection() {
       return (
-        <div className="deployment-flow2-cloud__list">
-          <div className="four-col">
-            <div className="p-card--highlighted"
-              onClick={this._selectCloud.bind(this, 'aws')}>
-              <juju.components.SvgIcon name="complete" size="16" /> AWS
+        <div>
+          <h2 className="deployment-flow2__section-title">Choose a cloud to deploy to</h2>
+          <div className="deployment-flow2-cloud__list">
+            <div className="four-col">
+              <div className="p-card--highlighted"
+                onClick={this._selectCloud.bind(this, 'aws')}>
+                <juju.components.SvgIcon
+                  height="150"
+                  width="156"
+                  name='aws' />
+              </div>
+            </div>
+            <div className="four-col">
+              <div className="p-card--highlighted is-disabled">
+                <juju.components.SvgIcon
+                  height="150"
+                  width="156"
+                  name='google' />
+              </div>
+            </div>
+            <div className="four-col last-col">
+              <div className="p-card--highlighted is-disabled">
+                <juju.components.SvgIcon
+                  height="150"
+                  width="156"
+                  name='azure' />
+              </div>
             </div>
           </div>
-          <div className="four-col">
-            <div className="p-card--highlighted is-disabled">
-              <juju.components.SvgIcon name="complete" size="16" /> GCE
-            </div>
-          </div>
-          <div className="four-col last-col">
-            <div className="p-card--highlighted is-disabled">
-              <juju.components.SvgIcon name="complete" size="16" /> Azure
-            </div>
-          </div>
-          <juju.components.GenericButton action={this._switchView.bind(this)}
-            disabled={this.selectedCloud}>
-            Provide your credentials...
-          </juju.components.GenericButton>
         </div>
       );
     }
 
+    addCredentials(name, key, secret) {
+      let credentials = this.props.credentials || {};
+      if (credentials[name]) {
+        console.error('Credentials already exist with that name');
+        return;
+      }
+      credentials[name] = {
+        key: key,
+        secret: secret
+      };
+
+      this.props.setState({
+        credentials: credentials
+      });
+    }
+
+    selectCredentials(name) {
+      this.props.setState({
+        selectedCredentials: name
+      });
+    }
+
     _renderCredentialsSection() {
-      if (this.state.selectedCloud) {
+      if (this.props.selectedCloud) {
         return (
           <juju.components.Credentials
+            addCredentials={this.addCredentials.bind(this)}
             completeSection={this._completeSection.bind(this)}
+            credentials={this.props.credentials}
             getGithubSSHKeys={this.props.getGithubSSHKeys}
-            selectedCloud={this.state.selectedCloud}
+            selectedCloud={this.props.selectedCloud}
+            selectCredentials={this.selectCredentials.bind(this)}
+            setState={this.props.setState}
             switchView={this._switchView.bind(this)}
             WebHandler={this.props.WebHandler} />);
       }
@@ -70,16 +103,22 @@ YUI.add('deployment-flow2-cloud', function() {
     }
 
     render() {
-      const content = this.state.view === 'clouds' ?
-        this._renderCloudSelection() :
-        this._renderCredentialsSection();
+      let content;
+      if (this.props.selectedCredentials || this.props.selectedCloud) {
+        content = this._renderCredentialsSection()
+      } else {
+        content = this._renderCloudSelection();
+      }
       return super.render(content);
     }
   }
 
   Cloud.propTypes = {
     getGithubSSHKeys: PropTypes.func.isRequired,
-    WebHandler: PropTypes.func.isRequired
+    WebHandler: PropTypes.func.isRequired,
+    selectedCredentials: PropTypes.string,
+    selectedCloud: PropTypes.string,
+    credentials: PropTypes.object
   };
 
   juju.components.Cloud = Cloud;

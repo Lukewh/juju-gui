@@ -11,11 +11,12 @@ class DeploymentFlow2 extends React.Component {
       estimatedCost: {
         jaasHosting: 25.50,
       },
-      isLoggedIn: false,
       openSection: 'modelName',
       sectionsComplete: 0,
-      sectionsTotal: 7,
-      visitedSections: ['modelName']
+      sectionsTotal: 6,
+      termsAgreed: false,
+      visitedSections: ['modelName'],
+      modelName: 'my-model'
     };
 
     this.sectionOrder = [
@@ -39,10 +40,14 @@ class DeploymentFlow2 extends React.Component {
     this.props.setPageTitle('Deploy your model');
   }
 
+  _setState(obj) {
+    this.setState(obj);
+  }
+
   setEstimatedCost(name, cost) {
     let estimatedCost = this.state.estimatedCost;
 
-    estimatedCost[name] = parseInt(cost);
+    estimatedCost[name] = parseFloat(cost);
 
     this.setState({
       estimatedCost: estimatedCost
@@ -59,21 +64,28 @@ class DeploymentFlow2 extends React.Component {
   }
 
   _handleClose() {
-    console.log('close');
+    this.props.changeState({
+      gui: {deploy: null},
+      profile: null,
+      special: {dd: null}
+    });
   }
 
   _generateProgressBar() {
-    const width = Math.ceil((this.state.sectionsComplete /
-      this.state.sectionsTotal)
-       * 100);
+    const segmentWidth = (100 / this.state.sectionsTotal);
+
+    let segments = [];
+    for(let i = 0, ii = this.state.sectionsComplete; i < ii; i += 1) {
+      segments.push(<div className="deployment-flow2__progress-bar"
+        style={{width: `${segmentWidth}%`}} key={i}></div>);
+    }
     return (<div className="deployment-flow2__progress">
-      <div className="deployment-flow2__progress-bar"
-        style={{width: `${width}%`}}></div>
+      {segments}
     </div>);
   }
 
   _generateHeader() {
-    if (!this.state.isLoggedIn && this.props.ddData) {
+    if (!this.props.isLoggedIn() && this.props.ddData) {
       return (
         <div className="deployment-panel__header deployment-panel__header--dark">
           <div className="deployment-panel__header-logo">
@@ -98,7 +110,7 @@ class DeploymentFlow2 extends React.Component {
             Deploy your model
           </div>
           <div className="deployment-panel__header-cost">
-            Estimated monthly cost:
+            Estimated monthly cost:&nbsp;
             <span className="deployment-panel__header-cost-value">
               ${this.getEstimatedCost()}
             </span>
@@ -173,7 +185,7 @@ class DeploymentFlow2 extends React.Component {
   }
 
   _generateDirectDeploy() {
-    if (this.props.ddData) {
+    if (!this.props.isLoggedIn() && this.props.ddData) {
       const props = this.props;
       const state = this.state;
       // As long as we're not loading the entity then pass what data we do have
@@ -195,14 +207,14 @@ class DeploymentFlow2 extends React.Component {
   }
 
   _generateSignup() {
-    if (!this.state.isLoggedIn && this.props.ddData) {
+    if (!this.props.isLoggedIn() && this.props.ddData) {
       return (
         <juju.components.DeploymentLogin
-          addNotification={() => {}}
-          callback={() => {}}
-          gisf={false}
+          addNotification={this.props.addNotification}
+          callback={() => {console.log('hi')}}
+          gisf={this.props.gisf}
           isDirectDeploy={true}
-          loginToController={this._login.bind(this)}
+          loginToController={this.props.loginToController}
           showLoginLinks={true}
         />
       );
@@ -210,18 +222,24 @@ class DeploymentFlow2 extends React.Component {
   }
 
   _generateSections() {
-    if (this.state.isLoggedIn || !this.props.ddData) {
+    if (this.props.isLoggedIn() || !this.props.ddData) {
       const openSection = this.state.openSection;
       return (
         <div>
           <juju.components.ModelName
           isComplete={this.state.completeSections.includes('modelName')}
-          isLoggedIn={this.state.isLoggedIn}
+          isLoggedIn={this.props.isLoggedIn()}
           isOpen={openSection === 'modelName'}
           isVisited={this.state.visitedSections.includes('modelName')}
           goToVisitedSection={this._goToVisitedSection.bind(this)}
           completeSection={this._completeSection.bind(this)}
-          login={this._login.bind(this)} />
+          login={this._login.bind(this)}
+          addNotification={this.props.addNotification}
+          gisf={this.props.gisf}
+          loginToController={this.props.loginToController}
+          getUserName={this.props.getUserName}
+          _state={this.state}
+          _setState={this._setState.bind(this)} />
         <juju.components.Cloud
           isComplete={this.state.completeSections.includes('cloud')}
           isOpen={openSection === 'cloud'}
@@ -229,7 +247,11 @@ class DeploymentFlow2 extends React.Component {
           goToVisitedSection={this._goToVisitedSection.bind(this)}
           completeSection={this._completeSection.bind(this)}
           getGithubSSHKeys={this.props.getGithubSSHKeys}
-          WebHandler={this.props.WebHandler} />
+          WebHandler={this.props.WebHandler}
+          selectedCredentials={this.state.selectedCredentials}
+          setState={this._setState.bind(this)}
+          selectedCloud={this.state.selectedCloud}
+          credentials={this.state.credentials} />
         <juju.components.SupportLevel
           isComplete={this.state.completeSections.includes('supportLevel')}
           isOpen={openSection === 'supportLevel'}
@@ -250,19 +272,35 @@ class DeploymentFlow2 extends React.Component {
           isVisited={this.state.visitedSections.includes('total')}
           goToVisitedSection={this._goToVisitedSection.bind(this)}
           completeSection={this._completeSection.bind(this)}
-          getEstimatedCost={this.getEstimatedCost.bind(this)} />
+          getEstimatedCost={this.getEstimatedCost.bind(this)}
+          budget={this.state.budget}
+          setState={this._setState.bind(this)}/>
         <juju.components.Payment
           isComplete={this.state.completeSections.includes('payment')}
           isOpen={openSection === 'payment'}
           isVisited={this.state.visitedSections.includes('payment')}
           goToVisitedSection={this._goToVisitedSection.bind(this)}
-          completeSection={this._completeSection.bind(this)} />
+          completeSection={this._completeSection.bind(this)}
+          setState={this._setState.bind(this)}
+          budget={this.state.budget}
+          cardName={this.state.cardName} />
         <juju.components.Deploy
           isComplete={this.state.completeSections.includes('deploy')}
           isOpen={openSection === 'deploy'}
           isVisited={this.state.visitedSections.includes('deploy')}
           goToVisitedSection={this._goToVisitedSection.bind(this)}
-          completeSection={this._completeSection.bind(this)} />
+          completeSection={this._completeSection.bind(this)}
+          termsAgreed={this.state.termsAgreed}
+          setState={this._setState.bind(this)} />
+        <div className="deployment-flow2__section is-visited">
+          <div className="deployment-flow2__section-header clearfix"
+            onClick={this._handleClose.bind(this)}>
+            <div className="inner-wrapper back-to-model">
+              <juju.components.SvgIcon name="chevron_up_16" size="16" />
+              &nbsp;Back to <b>{this.state.modelName}</b>
+            </div>
+          </div>
+        </div>
       </div>);
     }
   }
@@ -293,6 +331,10 @@ DeploymentFlow2.propTypes = {
   getDiagramUrl: PropTypes.func,
   getEntity: PropTypes.func,
   getGithubSSHKeys: PropTypes.func,
+  getUserName: PropTypes.func,
+  gisf: PropTypes.bool,
+  isLoggedIn: PropTypes.func,
+  loginToController: PropTypes.func,
   makeEntityModel: PropTypes.func,
   renderMarkdown: PropTypes.func,
   setPageTitle: PropTypes.func,

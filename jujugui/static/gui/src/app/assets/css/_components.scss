@@ -44,7 +44,14 @@
 @import '../../components/deployment-flow/signup/signup';
 @import '../../components/deployment-flow/sshkey/sshkey';
 @import '../../components/deployment-flow2/deployment-flow2';
+@import '../../components/deployment-flow2/df-input/df-input';
+@import '../../components/deployment-flow2/df-select/df-select';
+@import '../../components/deployment-flow2/cloud/cloud';
+@import '../../components/deployment-flow2/model-name/model-name';
+@import '../../components/deployment-flow2/payment/payment';
+@import '../../components/deployment-flow2/section/section';
 @import '../../components/deployment-flow2/support-level/support-level';
+@import '../../components/deployment-flow2/total/total';
 @import '../../components/env-size-display/env-size-display';
 @import '../../components/env-switcher/env-switcher';
 @import '../../components/env-switcher/list/list';

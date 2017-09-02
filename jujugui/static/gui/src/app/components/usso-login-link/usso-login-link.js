@@ -97,12 +97,18 @@ class USSOLoginLink extends React.Component {
     } else {
       ele = this._renderTextLink();
     }
-    return(
-      <div className="usso-login">
-        {ele}
+    let _notification;
+    if (this.props.suppressHover !== true) {
+      _notification = (
         <div className="usso-login__notification">
           {notification}
         </div>
+      );
+    }
+    return(
+      <div className="usso-login">
+        {ele}
+        {_notification}
       </div>);
   }
 };
@@ -113,7 +119,8 @@ USSOLoginLink.propTypes = {
   children: PropTypes.node,
   displayType: PropTypes.string.isRequired,
   gisf: PropTypes.bool,
-  loginToController: PropTypes.func.isRequired
+  loginToController: PropTypes.func.isRequired,
+  suppressHover: PropTypes.bool
 };
 
 YUI.add('usso-login-link', function() {

@@ -7,36 +7,63 @@ YUI.add('deployment-flow2-support-level', function() {
     constructor(props) {
       super(props, {
         showPlanDetails: false,
-        supportLeveL: 77,
-        supportPlans: {
+        supportLevel: 0,
+        applicationPlans: {
           charm1: {
             plan: "5",
-            amount: "25"
+            amount: "0"
           }
-        }
+        },
+        view: 'supportLevel',
+        applicationScreenViewed: false
       }, 'supportLevel');
-    }
 
-    componentWillMount() {
-      this._estimateCost();
+      this.supportLevelMap = {
+        '0': 'Free',
+        '8.75': 'Essential',
+        '77': 'Standard',
+        '154': 'Advanced'
+      };
     }
 
     setSupport(cost) {
+      const _cost = parseFloat(cost);
       this.setState({
-        supportLevel: parseInt(cost)
+        supportLevel: _cost
       });
-      this.props.setEstimatedCost('supportLevel', cost);
+      this.props.setEstimatedCost('supportLevel', _cost);
     }
 
     _generateHeaderContent() {
-      return (<span>
-        <span className="deployment-flow2__section-header-left">
-          Support level &bull; Application plans
-        </span>
-        <span className="deployment-flow2__section-header-right">
-          ${this._getTotalSupportCost().toFixed(2)}
-        </span>
-      </span>);
+      if (this.state.applicationScreenViewed) {
+        const charm1Cost = this._getApplicationCost('charm1');
+        return (<span>
+          <span className="deployment-flow2__section-header-left">
+            Support level: <b>{this.supportLevelMap[this.state.supportLevel.toString()]}</b>
+          </span>
+          <span className="deployment-flow2__section-header-right">
+            ${this._getTotalSupportCost().toFixed(2)}
+          </span>
+          <span className="deployment-flow2__section-header-applicationSupport">
+            <span className="left">
+              <img src="https://api.jujucharms.com/charmstore/v5/~containers/easyrsa-15/icon.svg"
+                width="24"/> EasyRSA
+            </span>
+            <span className="deployment-flow2__section-header-right">
+              ${charm1Cost ? charm1Cost.toFixed(2) : '0.00'}
+            </span>
+          </span>
+        </span>);
+      } else {
+        return (<span>
+          <span className="deployment-flow2__section-header-left">
+            Support level &bull; Application plans
+          </span>
+          <span className="deployment-flow2__section-header-right">
+            ${this._getTotalSupportCost().toFixed(2)}
+          </span>
+        </span>);
+      }
     }
 
     _togglePlanDetails() {
@@ -45,216 +72,284 @@ YUI.add('deployment-flow2-support-level', function() {
       });
     }
 
-    _estimateCost() {
-      if (this.state.supportLevel === 0) {
-        this.props.setEstimatedCost('supportPlan', 0);
-
-        return;
-      }
-      const supportPlans = this.state.supportPlans;
+    _getAllApplicationCost() {
+      const applicationPlans = this.state.applicationPlans;
       let cost = 0;
-      Object.keys(supportPlans).forEach(charm => {
-        if (supportPlans[charm].plan && supportPlans[charm].amount) {
-          cost += supportPlans[charm].plan * supportPlans[charm].amount;
+      Object.keys(applicationPlans).forEach(charm => {
+        if (applicationPlans[charm].plan && applicationPlans[charm].amount) {
+          cost += applicationPlans[charm].plan * applicationPlans[charm].amount;
         }
       });
 
       this.props.setEstimatedCost('supportPlan', cost);
     }
 
-    _getPlanCost(charm) {
-      return this.state.supportPlans[charm].plan;
+    _getApplicationRate(charm) {
+      return this.state.applicationPlans[charm].plan;
     }
-    _getTotalPlanCost(charm) {
+    _getApplicationCost(charm) {
       return (
-        parseInt(this.state.supportPlans[charm].plan) *
-        parseInt(this.state.supportPlans[charm].amount)
+        parseInt(this.state.applicationPlans[charm].plan) *
+        parseInt(this.state.applicationPlans[charm].amount)
       );
     }
 
     _updateSupportPlan(charm, plan) {
-      let supportPlans = this.state.supportPlans;
-      if (!supportPlans[charm]) {
-        supportPlans[charm] = {};
+      let applicationPlans = this.state.applicationPlans;
+      if (!applicationPlans[charm]) {
+        applicationPlans[charm] = {};
       }
-      supportPlans[charm].plan = parseInt(plan);
-
+      applicationPlans[charm].plan = parseInt(plan);
       this.setState({
-        supportPlans: supportPlans
+        applicationPlans: applicationPlans
       });
-      this._estimateCost();
+      this._getAllApplicationCost();
     }
 
     _updateSupportPlanAmount(charm, amount) {
-      let supportPlans = this.state.supportPlans;
-      if (!supportPlans[charm]) {
-        supportPlans[charm] = {};
+      let applicationPlans = this.state.applicationPlans;
+      if (!applicationPlans[charm]) {
+        applicationPlans[charm] = {};
       }
-      supportPlans[charm].amount = parseInt(amount);
+      applicationPlans[charm].amount = parseInt(amount);
 
       this.setState({
-        supportPlans: supportPlans
+        applicationPlans: applicationPlans
       });
-      this._estimateCost();
+      this._getAllApplicationCost();
     }
 
     _getTotalSupportCost() {
-      let cost =  parseInt(this.state.supportLevel);
-      Object.keys(this.state.supportPlans).forEach(charm => {
-        cost += this._getTotalPlanCost(charm);
-      });
+      let cost =  parseFloat(this.state.supportLevel);
+      // if (this.state.applicationScreenViewed) {
+      //   Object.keys(this.state.applicationPlans).forEach(charm => {
+      //     cost += this._getApplicationCost(charm);
+      //   });
+      // }
 
       return cost;
     }
 
-    _generateApplicationPlans() {
-      if (this.state.supportLevel === 0) {
-        return null;
-      }
-      return (
-        <div>
-          <h2><juju.components.SvgIcon name="complete"
-            width="16" /> Pick application plan</h2>
-          <h3>Metered applications</h3>
-          <div className="support-plan-row">
-            <div className="support-plan-row__charm">
-              <div className="support-plan-row__charm-name">Leostream</div>
-              <div className="support-plan-row__charm-units">2 units</div>
-            </div>
-            <div className="support-plan-row__plan">
-              <juju.components.InsetSelect
-                disabled={false}
-                label="Support plan"
-                onChange={this._updateSupportPlan.bind(this, 'charm1')}
-                options={
-                  [
-                    {label: "Standard plan", value: "5"},
-                    {label: "Advanced plan", value: "10"}
-                  ]
-                }
-                value="5"
-              />
-              <p>Metered by: number of users<br />
-              For: hosted desktop management<br />
-              ${parseInt(this._getPlanCost.call(this, 'charm1')).toFixed(2)} per user per month<br />default
-              <a href="">Pricing</a><br />
-              <a href="">Terms and conditions</a></p>
-            </div>
-            <div className="support-plan-row__amount">
-              <juju.components.InsetSelect
-                disabled={false}
-                label="Amount"
-                onChange={this._updateSupportPlanAmount.bind(this, 'charm1')}
-                options={
-                  [
-                    {label: "25 seats", value: "25"},
-                    {label: "50 seats", value: "50"}
-                  ]
-                }
-                value="25"
-              />
-              <p><a href="">Usage history</a></p>
-            </div>
-            <div className="support-plan-row__total">
-              ${this._getTotalPlanCost.call(this, 'charm1').toFixed(2)}
-            </div>
-          </div>
-          <h3>Unmetered applications</h3>
-          <table>
-            <tbody>
-              <tr>
-                <th>Charm name</th>
-                <td>4 units</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      );
+    _switchView() {
+      this.setState({
+        view: this.state.view === 'supportLevel' ? 'applicationPlan' : 'supportLevel',
+        applicationScreenViewed: this.state.view === 'supportLevel' &&
+          this.state.applicationScreenViewed === false ? true : false
+      });
+
+      this._getAllApplicationCost();
     }
 
-    render() {
+    _generateApplicationPlans() {
       const infoNotificationContent = (
         <span>
           <b>Info:</b> Cost is determined by plan and usage. Pricing can also vary with support.
         </span>
       );
-      const extraInfoclasses = classNames({
-        'hidden': !this.state.showPlanDetails
-      });
+      return (
+        <div className="deployment-flow2__support-level">
+          <div className="clearfix deployment-flow2__support-level-heading">
+            <p className="left">Support level: <b>{this.supportLevelMap[this.state.supportLevel.toString()]}</b>
+            &nbsp;<span role="button" className="link" onClick={this._switchView.bind(this)}>
+              Change
+            </span></p>
+            <p className="right">
+              <b>${this.state.supportLevel.toFixed(2)}</b>
+            </p>
+          </div>
+          <h2 className="deployment-flow2__section-title">Pick application plans and estimate usage</h2>
+          <juju.components.Notification
+            type="information"
+            content={infoNotificationContent}
+            />
+          <table className="df-table">
+            <thead>
+              <tr>
+                <th className="equal-width">Metered applications</th>
+                <th>Plan</th>
+                <th>Estimated usage</th>
+                <th className="align-right">Estimated cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <img src="https://api.jujucharms.com/charmstore/v5/~containers/easyrsa-15/icon.svg"
+                    width="24"/>EasyRSA<br /><span>1 unit</span>
+                </td>
+                <td>
+                  <juju.components.DfSelect
+                    onChange={this._updateSupportPlan.bind(this, 'charm1')}
+                    options={
+                      [
+                        {label: "Standard plan", value: "5"},
+                        {label: "Advanced plan", value: "10"}
+                      ]
+                    }
+                    value={this.state.applicationPlans.charm1.plan}
+                  />
+                  <p className="smaller">Metered by: number of available certificates<br />
+                  For: issuing of certificates<br />
+                  <b>${parseInt(this._getApplicationRate.call(this, 'charm1')).toFixed(2)} per certificate per month</b><br />
+                  <a href="">Pricing</a><br />
+                  <a href="">Terms and conditions</a></p>
+                </td>
+                <td>
+                  <juju.components.DfSelect
+                    onChange={this._updateSupportPlanAmount.bind(this, 'charm1')}
+                    options={
+                      [
+                        {label: "0", value: "0"},
+                        {label: "1", value: "1"},
+                        {label: "5", value: "5"}
+                      ]
+                    }
+                    value={this.state.applicationPlans.charm1.amount}
+                  />
+                  Certificates
+                  <p className="smaller"><a href="">Usage history</a></p>
+                </td>
+                <td className="align-right">
+                  <b>${this._getApplicationCost.call(this, 'charm1').toFixed(2)}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table className="df-table">
+            <thead>
+              <tr>
+                <th className="equal-width">Unmetered applications</th>
+                <th>Units</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="https://api.jujucharms.com/charmstore/v5/~containers/etcd-48/icon.svg"
+                  width="24"/>etcd</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td><img src="https://api.jujucharms.com/charmstore/v5/~containers/kubeapi-load-balancer-25/icon.svg"
+                  width="24"/>kubeapi-load-balancer</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td><img src="https://api.jujucharms.com/charmstore/v5/~containers/kubernetes-master-47/icon.svg"
+                  width="24"/>kubernetes-master</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td><img src="https://api.jujucharms.com/charmstore/v5/~containers/kubernetes-worker-52/icon.svg"
+                  width="24"/>kubernetes-worker</td>
+                <td>3</td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button className="button--inline-positive right"
+              onClick={this._completeSection.bind(this)}>Continue with these plans</button>
+          </div>
+        </div>
+      );
+    }
+
+    _generateSupportLevel() {
+      const extraInfoclasses = classNames(
+        'deployment-flow2__card-info',
+        {
+          'hidden': !this.state.showPlanDetails
+        }
+      );
       const supportPlanClasses = classNames({
         'hidden': this.state.supportLevel === 0
       });
-      return super.render(<div>
-        <h2><juju.components.SvgIcon name="complete"
-          width="16" /> Choose your level of support</h2>
-        <p>Sets a price for Ubuntu Advantage support.</p>
-        <p>Minimum: 1 month, charged per machine</p>
-        <div className="three-col">
-          <div className="card" onClick={this.setSupport.bind(this, 0)}>
-            Free
-            <ul>
-              <li>Community support</li>
-              <li>No credit card required</li>
-            </ul>
-            <div className={extraInfoclasses}>
-              <p>Your trial of 1000 machine-hours of JAAS hosting is free.</p>
-              <p>Payment will be requested after 1000 hours usage of the 7 machines in your model</p>
-              <p>Cloud provider charges are incurred seperately.</p>
+      return (
+        <div>
+          <h2 className="deployment-flow2__section-title">Choose your level of support</h2>
+          <p>Sets a price for Ubuntu Advantage support. Minimum: 1 month, charged per machine</p>
+          <div className="three-col">
+            <div className={`deployment-flow2__card ${this.state.supportLevel === 0 ? 'is-selected' : ''}`} onClick={this.setSupport.bind(this, 0)}>
+              <h2 className="deployment-flow2__section-title">Free</h2>
+              <ul className="deployment-flow2__card-list">
+                <li>Community support</li>
+              </ul>
+              <div className={extraInfoclasses}>
+                <p>Your trial of 1000 machine-hours of JAAS hosting is free.</p>
+                <p>Payment will be requested after 1000 hours usage of the 7 machines in your model</p>
+                <p>Cloud provider charges are incurred seperately.</p>
+              </div>
+              <div className="deployment-flow2__card-footer">
+                <b>$0</b> - no credit card required
+              </div>
             </div>
-            $0
           </div>
-        </div>
-        <div className="three-col">
-          <div className="card" onClick={this.setSupport.bind(this, 8.75)}>
-            Essential
-            <ul>
-              <li>8hx5d ticket</li>
-              <li>Livepatch</li>
-            </ul>
-            <div className={extraInfoclasses}>
-              <p>This plan suits users that are seeking to cap the cost of Juju development at scale.</p>
+          <div className="three-col">
+            <div className={`deployment-flow2__card ${this.state.supportLevel === 8.75 ? 'is-selected' : ''}`} onClick={this.setSupport.bind(this, 8.75)}>
+              <h2 className="deployment-flow2__section-title">Essential</h2>
+              <ul className="deployment-flow2__card-list">
+                <li>8hx5d ticket</li>
+                <li>Livepatch</li>
+              </ul>
+              <div className={extraInfoclasses}>
+                <p>This plan suits users that are seeking to cap the cost of Juju development at scale.</p>
+              </div>
+              <div className="deployment-flow2__card-footer">
+                <span className="dollars">$8</span>.75
+              </div>
             </div>
-            $8.75
+            <p>$1.25 per machine/hour<br />Minimum 10 machines</p>
           </div>
-          <p>$1.25 per machine<br />Minimum 10 machines</p>
-        </div>
-        <div className="three-col">
-          <div className="card" onClick={this.setSupport.bind(this, 77)}>
-            Standard
-            <ul>
-              <li>10x5 phone support</li>
-              <li>2h critical response</li>
-              <li>Livepatch</li>
-            </ul>
-            <div className={extraInfoclasses}>
-              Details
+          <div className="three-col">
+            <div className={`deployment-flow2__card ${this.state.supportLevel === 77 ? 'is-selected' : ''}`} onClick={this.setSupport.bind(this, 77)}>
+              <h2 className="deployment-flow2__section-title">Standard</h2>
+              <ul className="deployment-flow2__card-list">
+                <li>10x5 phone support</li>
+                <li>2h critical response</li>
+                <li>Livepatch</li>
+              </ul>
+              <div className={extraInfoclasses}>
+                <p>Details</p>
+              </div>
+              <div className="deployment-flow2__card-footer">
+                <span className="dollars">$77</span>.00
+              </div>
             </div>
-            $77.00
+            <p>$11.00 per machine/hour</p>
           </div>
-          <p>$11.00 per machine</p>
-        </div>
-        <div className="three-col last-col">
-          <div className="card" onClick={this.setSupport.bind(this, 154)}>
-            Advanced
-            <ul>
-              <li>24x7 phone support</li>
-              <li>1h critical response</li>
-              <li>Livepatch</li>
-            </ul>
-            <div className={extraInfoclasses}>
-              Details
+          <div className="three-col last-col">
+            <div className={`deployment-flow2__card ${this.state.supportLevel === 154 ? 'is-selected' : ''}`} onClick={this.setSupport.bind(this, 154)}>
+              <h2 className="deployment-flow2__section-title">Advanced</h2>
+              <ul className="deployment-flow2__card-list">
+                <li>24x7 phone support</li>
+                <li>1h critical response</li>
+                <li>Livepatch</li>
+              </ul>
+              <div className={extraInfoclasses}>
+                <p>Details</p>
+              </div>
+              <div className="deployment-flow2__card-footer">
+                <span className="dollars">$154</span>.00
+              </div>
             </div>
-            $154.00
+            <p>$22.00 per machine/hour</p>
           </div>
-          <p>$22.00 per machine</p>
-        </div>
-        <button onClick={this._togglePlanDetails.bind(this)}>View plan details</button>
+          <div className="divide-button">
+            <button className="button--inline-neutral" onClick={this._togglePlanDetails.bind(this)}>
+              {this.state.showPlanDetails ? 'Hide' : 'View'} support details
+            </button>
+          </div>
 
-        {this._generateApplicationPlans()}
+          <button className="button--inline-positive right"
+            onClick={this._switchView.bind(this)}>Confirm support level</button>
+        </div>
+      );
+    }
 
-        <button className="button--positive"
-          onClick={this._completeSection.bind(this)}>Choose Ubuntu Advantage with these plans</button>
-      </div>);
+    render() {
+      const content = this.state.view === 'supportLevel' ? this._generateSupportLevel() :
+        this._generateApplicationPlans();
+      return super.render(content);
     }
   }
 

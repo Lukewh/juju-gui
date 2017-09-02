@@ -10,8 +10,26 @@ class AccordionSection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: this.props.startOpen
+      open: this.props.startOpen,
+      maxHeight: 0
     };
+  }
+
+  componentDidMount() {
+    this.updateMaxHeight();
+    if (this._reactInternalInstance) {
+      this._reactInternalInstance._renderedComponent._hostNode.
+        addEventListener('DOMSubtreeModified', () => {
+          this.updateMaxHeight();
+      }, false);
+    }
+  }
+
+  updateMaxHeight() {
+    this.setState({
+      maxHeight:
+        this['accordion-section-content'].scrollHeight
+    });
   }
 
   /**
@@ -19,18 +37,6 @@ class AccordionSection extends React.Component {
   */
   _toggle() {
     this.setState({open: !this.state.open});
-  }
-
-  /**
-    Get's the content style based on some rules.
-
-    @return {Object} Object of CSS styles.
-  */
-  _getStyle() {
-    return {
-      maxHeight: this.state.open ?
-        this['accordion-section-content'].scrollHeight : 0
-    };
   }
 
   /**
@@ -68,7 +74,7 @@ class AccordionSection extends React.Component {
   _generateContent() {
     return (<div className="accordion-section__content"
       ref={(div) => { this['accordion-section-content'] = div; }}
-      style={this._getStyle()}>
+      style={{maxHeight: this.state.open ? this.state.maxHeight : 0}}>
       {this.props.children}
     </div>);
   }

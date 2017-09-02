@@ -1354,6 +1354,10 @@ YUI.add('juju-gui', function(Y) {
           getDiagramURL={charmstore.getDiagramURL.bind(charmstore)}
           getEntity={charmstore.getEntity.bind(charmstore)}
           getGithubSSHKeys={window.jujugui.sshKeys.githubSSHKeys}
+          getUserName={getUserName}
+          gisf={this.get('gisf')}
+          isLoggedIn={isLoggedIn}
+          loginToController={loginToController}
           makeEntityModel={Y.juju.makeEntityModel}
           renderMarkdown={marked}
           setPageTitle={this.setPageTitle.bind(this)}

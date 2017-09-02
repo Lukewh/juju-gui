@@ -9,31 +9,63 @@ YUI.add('deployment-flow2-total', function() {
     }
 
     _generateHeaderContent() {
-      return (<span>
+      const right = (<span className="deployment-flow2__section-header-right">
+        <span className="total">${this.props.getEstimatedCost()}</span>
+      </span>);
+
+      let left = (
         <span className="deployment-flow2__section-header-left">
-          Total &bull; budget
-        </span>
-        <span className="deployment-flow2__section-header-right">
-          ${this.props.getEstimatedCost()}
-        </span>
+          Total &bull; Budget
+        </span>);
+      if (this.props.budget) {
+        left = (
+          <span className="deployment-flow2__section-header-left">
+            Total &bull; Budget: <b>${this.props.budget}</b>
+          </span>
+        );
+      }
+      return (<span>
+        {left}
+        {right}
       </span>);
     }
 
-    render() {
-      return super.render(<div>
-        <h2><juju.components.SvgIcon name="complete"
-          width="16" /> Set your maximum monthly budget</h2>
-        <p>Estimated monthly cost: ${this.props.getEstimatedCost()}</p>
-        <p>Never charge me more than:  <input value="" /></p>
+    _setBudget() {
+      this.props.setState({
+        budget: this.budget.value
+      });
+      this._completeSection();
+    }
 
-        <button className="button--positive"
-          onClick={this._completeSection.bind(this)}>Set monthly budget</button>
+    render() {
+      const notificationContent = (
+        <span><b>Info:</b> We will email you when you reach 80% of this limit. <span className="link">
+          Edit notifications
+        </span></span>
+      );
+      return super.render(<div>
+        <h2 className="deployment-flow2__section-title">Set your maximum monthly budget</h2>
+        <juju.components.Notification
+          type="information"
+          content={notificationContent}
+        />
+        <div className="deployment-flow2__total-row">Estimated monthly cost: <span className="total">${this.props.getEstimatedCost()}</span></div>
+        <div className="deployment-flow2__budget-row">Never charge me more than: <div className="deployment-flow2__budget-row-input">
+          $ <juju.components.DfInput
+            value={this.props.budget} parentRef={(ele) => {this.budget = ele}}
+          /></div>
+        </div>
+
+        <button className="button--inline-positive right"
+          onClick={this._setBudget.bind(this)}>Continue</button>
       </div>);
     }
   }
 
   Total.propTypes = {
-    getEstimatedCost: PropTypes.func
+    budget: PropTypes.string,
+    getEstimatedCost: PropTypes.func,
+    setState: PropTypes.func
   };
 
   juju.components.Total = Total;

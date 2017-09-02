@@ -4,18 +4,10 @@
 
 
 class AddCredentials extends React.Component {
-  _renderNotification() {
-    const content = (<span>
-      <b>Info:</b> Credentials are stored securely on our servers.
-    </span>);
-    return (<juju.components.notification
-      content={content} />);
-  }
-
   _handleAdd() {
-    const name = this.credName.refs.field.value;
-    const accessKey = this.credAccessKey.refs.field.value;
-    const secretKey = this.credSecretKey.refs.field.value;
+    const name = this.credName.value;
+    const accessKey = this.credAccessKey.value;
+    const secretKey = this.credSecretKey.value;
 
     if (!name || name.trim().length === 0) {
       console.error('Provide a name for the credentials');
@@ -34,41 +26,51 @@ class AddCredentials extends React.Component {
   }
 
   _renderAWS() {
-    return (<div>
-      <h2>Provide your Amazon Web Services credentials</h2>
-      <a href="">Sign up for Amazon Web Services</a>
-
+    const notificationContent = (<span>
+      <b>Info:</b> Credentials are stored securely on our servers and we will notify you by email whenever they are changed or deleted. You can see where they are used and manage or remove them via the&nbsp;
+      <a href="/gui" target="_blank">account page</a>.
+    </span>);
+    return (<div className="deployment-flow2__section-add-creds">
       <div className="six-col">
-        <juju.components.GenericInput
+        <juju.components.DfInput
           label="Credential name"
-          multiLine={false}
-          required={true}
-          ref={(ele) => {this.credName = ele}}
-          type="text" />
-      </div>
-      <div className="twelve-col">
-        <h3>Enter credentials</h3>
-      </div>1
-      <div className="six-col">
-        <p>Need help? Read more about credentials in general or setting up AWS credentials.</p>
-        <juju.components.GenericInput
-          label="EC2 Access key"
-          multiLine={false}
-          required={true}
-          ref={(ele) => {this.credAccessKey = ele}}
-          type="text" />
-        <juju.components.GenericInput
-          label="EC2 Secret key"
-          multiLine={false}
-          required={true}
-          ref={(ele) => {this.credSecretKey = ele}}
-          type="text" />
+          hint="e.g. 'My personal credentials'"
+          id="credentialsName"
+          parentRef={(ele) => {this.credName = ele}}
+        />
       </div>
       <div className="six-col last-col">
-        <p>Credentials are stored securely on our servers and we will notify you by email whenever they are changed or deleted. You can see where they are used and manage or remove them via the account page.</p>
+        <a href="https://aws.amazon.com/" target="_blank" className="external">Sign up for Amazon Web Services</a>
       </div>
-      <button className="button--positive"
-        onClick={this._handleAdd.bind(this)}>Add cloud credentials</button>
+      <div className="six-col">
+        <h3 className="deployment-flow2__section-add-creds-h3">Enter credentials</h3>
+        <p>Need help? Read more about <a href="https://jujucharms.com/docs/stable/credentials" target="_blank">credentials in general</a> or <a href="https://jujucharms.com/docs/stable/help-aws" target="_blank">setting up AWS credentials</a>.</p>
+        <juju.components.DfInput
+          label="EC2 Access key"
+          id="credentialsAccess"
+          parentRef={(ele) => {this.credAccessKey = ele}}
+        />
+        <juju.components.DfInput
+          label="EC2 Secret key"
+          id="credentialsSecret"
+          parentRef={(ele) => {this.credSecretKey = ele}}
+        />
+      </div>
+      <div className="six-col last-col">
+        <juju.components.Notification
+          type="information"
+          extraClasses="deployment-flow2__section-add-creds-notification"
+          content={notificationContent}
+        />
+      </div>
+      <div className="right deployment-flow2__section-add-creds-complete">
+        <juju.components.SvgIcon
+          name="padlock_16"
+          width="12"
+          height="16" />&nbsp;SSL encrypted&nbsp;
+        <button className="button--inline-positive"
+          onClick={this._handleAdd.bind(this)}>Add cloud credentials</button>
+      </div>
     </div>);
   }
 
@@ -83,7 +85,7 @@ class AddCredentials extends React.Component {
 
 AddCredentials.propTypes = {
   selectedCloud: PropTypes.string.isRequired,
-  addCredentials: PropTypes.func.isRequired
+  addCredentials: PropTypes.func.isRequired,
 };
 
 YUI.add('deployment-flow2-add-credentials', function() {

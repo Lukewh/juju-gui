@@ -4,37 +4,11 @@
 
 
 class Credentials extends React.Component {
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
     this.state = {
-      credentials: null,
-      selectedCredentials: null,
-      showAdd: true
+      showAdd: !this.props.credentials
     };
-  }
-
-  addCredentials(name, key, secret) {
-    let credentials = this.state.credentials || {};
-    if (credentials[name]) {
-      console.error('Credentipropsals already exist with that name');
-      return;
-    }
-    credentials[name] = {
-      key: key,
-      secret: secret
-    };
-
-    this.setState({
-      credentials: credentials,
-      showAdd: false
-    });
-  }
-
-  _setCredential(name) {
-    this.setState({
-      selectedCredentials: name
-    });
   }
 
   /**
@@ -45,7 +19,7 @@ class Credentials extends React.Component {
   */
   _generateCredentials() {
     let options = [];
-    const stateCredentials = this.state.credentials;
+    const stateCredentials = this.props.credentials;
     Object.keys(stateCredentials).forEach(key => {
       options.push({
         label: key,
@@ -71,59 +45,71 @@ class Credentials extends React.Component {
         showAdd: true
       });
     } else {
-      this._setCredential(value);
+      this.props.selectCredentials(value);
     }
   }
 
-  /**
-    Generate a change cloud action if a cloud has been selected.
-
-    @method _generateAction
-    @returns {Array} The list of actions.
-  */
-  _generateSelect() {
-    return (
-      <form className="deployment-credential__form">
-        <div className="prepend-two four-col">
-          <juju.components.InsetSelect
-            disabled={false}
-            label="Credential"
-            onChange={this._handleCredentialChange.bind(this)}
-            options={this._generateCredentials()}
-            ref="credential"
-            value={this.state.selectedCredentials} />
-        </div>
-        <div className="four-col">
-          <juju.components.InsetSelect
-            disabled={false}
-            label="Region"
-            onChange={this.props.setRegion}
-            options={[{label: 'eu-west-1', value: 'eu-west-1'}]}
-            value="eu-west-1" />
-        </div>
-
-        <div>
-          <juju.components.DeploymentSSHKey
-            getGithubSSHKeys={this.props.getGithubSSHKeys}
-            WebHandler={this.props.WebHandler}
-            addNotification={()=>{}}
-            cloud={{}}
-            setSSHKeys={()=>{}}
-          />
-        </div>
-
-        <button className="button--positive"
-          onClick={this.props.completeSection}>Confirm</button>
-      </form>);
+  completeSection() {
+    this.props.setState({
+      selectedCredentials: this.credential.value
+    });
+    this.props.completeSection();
   }
 
   _generateSelection() {
     return (
       <div className="deployment-flow2-choose-credentials">
-        Logo
-        {this._generateSelect()}
+        <form className="deployment-credential__form">
+          <div className="three-col deployment-flow2-choose-credentials__image">
+            <juju.components.SvgIcon
+              height="60"
+              width="234"
+              name="aws" />
+          </div>
+          <div className="four-col">
+            <juju.components.DfSelect
+              label="Credential"
+              onChange={this._handleCredentialChange.bind(this)}
+              options={this._generateCredentials()}
+              parentRef={(ele) => {this.credential = ele}}
+              value={this.state.selectedCredentials}
+            />
+          </div>
+          <div className="four-col last-col">
+            <juju.components.DfSelect
+              label="Region"
+              onChange={this.props.setRegion}
+              options={[
+                {label: 'eu-west-1', value: 'eu-west-1'}
+              ]}
+              value="eu-west-1"
+            />
+          </div>
+
+          <div className="twelve-col deployment-flow2__section-sshkeys">
+            <h2 className="deployment-flow2__section-title">Add SSH keys (optional)</h2>
+            <juju.components.DeploymentSSHKey
+              getGithubSSHKeys={this.props.getGithubSSHKeys}
+              WebHandler={this.props.WebHandler}
+              addNotification={()=>{}}
+              cloud={{}}
+              setSSHKeys={()=>{}}
+            />
+          </div>
+          <div className="twelve-col">
+            <button className="button--inline-positive right"
+              onClick={this.completeSection.bind(this)}>Confirm</button>
+          </div>
+        </form>
       </div>
     );
+  }
+
+  addCredentials(name, key, secret) {
+    this.setState({
+      showAdd: false
+    });
+    this.props.addCredentials(name, key, secret);
   }
 
   render() {
@@ -139,42 +125,48 @@ class Credentials extends React.Component {
     const accordionTitle = (<span><b>7 machines</b> will be added on Amazon Web Services. This will incur a seperate charge.</span>);
     return (
       <div className="deployment-flow2-credentials">
-        <span role="button" onClick={this.props.switchView}>
+        <span className="link right" role="button" onClick={this.props.switchView}>
           Change cloud
         </span>
+        <h2 className="deployment-flow2__section-title">Provide your Amazon Web Services credentials</h2>
+        <div className="deployment-flow2-credentials__machines">
+          <juju.components.AccordionSection
+            startOpen={false}
+            title={accordionTitle}>
+          <table className="df-table">
+            <tbody>
+              <tr>
+                <th>4 machines</th>
+                <td>1 x 1GHz</td>
+                <td>8 GB RAM</td>
+                <td>320 GB Storage</td>
+                <td>Ubuntu 14.04</td>
+              </tr>
+              <tr>
+                <th>3 machines</th>
+                <td>2 x 2GHz</td>
+                <td>16 GB RAM</td>
+                <td>160 GB Storage</td>
+                <td>Ubuntu 14.04</td>
+              </tr>
+            </tbody>
+          </table>
+          </juju.components.AccordionSection>
+        </div>
         {content}
-        Machines
-        <juju.components.AccordionSection
-          startOpen={false}
-          title={accordionTitle}>
-        <table>
-          <tbody>
-            <tr>
-              <th>4 machines</th>
-              <td>1 x 1GHz</td>
-              <td>8 GB RAM</td>
-              <td>320 GB Storage</td>
-              <td>Ubuntu 14.04</td>
-            </tr>
-            <tr>
-              <th>3 machines</th>
-              <td>2 x 2GHz</td>
-              <td>16 GB RAM</td>
-              <td>160 GB Storage</td>
-              <td>Ubuntu 14.04</td>
-            </tr>
-          </tbody>
-        </table>
-        </juju.components.AccordionSection>
       </div>
     );
   }
 }
 
 Credentials.propTypes = {
+  addCredentials: PropTypes.func.isRequired,
   completeSection: PropTypes.func.isRequired,
+  credentials: PropTypes.any,
   getGithubSSHKeys: PropTypes.func.isRequired,
+  setState: PropTypes.func,
   selectedCloud: PropTypes.string.isRequired,
+  selectCredentials: PropTypes.func.isRequired,
   switchView: PropTypes.func.isRequired,
   WebHandler: PropTypes.func.isRequired
 };

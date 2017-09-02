@@ -1,3 +1,11 @@
+.deployment-flow2__support-level {
+  margin-top: -1rem;
+
+  &--heading {
+    margin-bottom: 1rem;
+  }
+}
+
 .support-plan-row {
   display: flex;
   flex-direction: row;
@@ -6,9 +14,56 @@
   &__charm {
     width: 20%;
   }
-  
+
   &__plan,
   &__amount {
     width: 34%;
+  }
+}
+
+.deployment-flow2__card {
+  background: $white;
+  border-radius: 2px;
+  border: 1px solid $white;
+  box-shadow: 0 1px 4.85px 0.15px rgba(0,0,0,0.2);
+  padding: 1rem;
+  cursor: pointer;
+
+  &.is-selected {
+    border-color: $link-blue;
+  }
+
+  &-list {
+    margin-left: 0;
+    list-style-type: none;
+    height: 80px;
+
+    li {
+      background: url(https://assets.ubuntu.com/v1/87f100d4-tick.svg) left 0.3rem no-repeat;
+      background-size: 1rem;
+      padding-left: 1.5rem;
+      margin-bottom: .25rem;
+    }
+  }
+
+  &-info {
+    border-top: 1px solid $color-mid-light;
+  }
+
+  &-footer {
+    border-top: 1px solid $color-mid-light;
+    padding-top: 1rem;
+    height: 43px;
+
+    .dollars {
+      font-size: 1.4375rem;
+      font-weight: normal;
+    }
+  }
+
+  & + p {
+    margin-top: .75rem;
+    color: $color-mid-dark;
+    font-size: .875rem;
   }
 }

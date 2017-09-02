@@ -49,8 +49,6 @@ class Section extends React.Component {
     return (<div className="deployment-flow2__section-header clearfix"
       onClick={this._goToVisitedSection.bind(this)}>
       <div className="inner-wrapper">
-        <juju.components.SvgIcon name="complete"
-          width="16" />
         {this._generateHeaderContent()}
       </div>
     </div>);
@@ -67,8 +65,9 @@ class Section extends React.Component {
     const classes = classNames(
       'deployment-flow2__section',
       {
-        'isComplete': this.state.isComplete,
-        'isVisited': this.state.isVisited
+        'is-complete': this.state.isComplete,
+        'is-visited': this.state.isVisited,
+        'is-open': this.props.isOpen,
       }
     );
     return (

@@ -20,14 +20,15 @@ YUI.add('deployment-flow2-jaas-hosting', function() {
     }
 
     render() {
-      return super.render(<div>
-        <h2><juju.components.SvgIcon name="complete"
-          width="16" /> JAAS hosting costs</h2>
-        <p>Canonical hosts and manages the Juju controllers that run your model.
-          <em>$0.005 per machine-hour</em></p>
-        $25.20
-        <button className="button--positive"
-          onClick={this._completeSection.bind(this)}>Next</button>
+      return super.render(<div className="deployment-flow2__section-jaas">
+        <h2 className="deployment-flow2__section-title">JAAS is Juju-as-a-Service</h2>
+        <p className="left">Canonical hosts and manages the Juju controllers that run your model.
+        &nbsp;<em>$0.005 per machine-hour</em></p>
+        <p className="right"><b>$25.20</b></p>
+        <div>
+          <button className="button--inline-positive right"
+            onClick={this._completeSection.bind(this)}>Next</button>
+        </div>
       </div>);
     }
   }
