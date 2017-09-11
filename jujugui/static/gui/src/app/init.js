@@ -13,6 +13,8 @@ const utils = require('./init/utils');
 const hotkeys = require('./init/hotkeys');
 const csUser = require('./init/charmstore-user');
 
+const newBakery = require('./utils/bakery-utils');
+
 const ComponentRenderersMixin = require('./init/component-renderers-mixin');
 const DeployerMixin = require('./init/deployer-mixin');
 
@@ -127,7 +129,7 @@ class GUIApp {
       Used to perform requests on a macaroon authenticated endpoints.
       @type {Object}
     */
-    this.bakery = yui.juju.bakeryutils.newBakery(
+    this.bakery = newBakery(
       config, this.user, stateGetter, cookieSetter, webHandler);
     /**
       A charm store API client instance.
