@@ -18,6 +18,8 @@ const newBakery = require('./utils/bakery-utils');
 const ComponentRenderersMixin = require('./init/component-renderers-mixin');
 const DeployerMixin = require('./init/deployer-mixin');
 
+const Notification = require('./components/notification/notification');
+
 // Hacks untill all of the global references have been removed.
 window.jsyaml = require('js-yaml');
 // Required for the envionment.js file.
@@ -123,6 +125,27 @@ class GUIApp {
     const stateGetter = () => this.state.current;
     const cookieSetter = (value, callback) => {
       this.charmstore.setAuthCookie(value, callback);
+    };
+
+    /**
+      Shows the login notification
+      @param {Object} content JSX of the content.
+    */
+    const showLoginNotification = (content) => {
+      const holder = document.getElementById('login-notification');
+      let dismiss = null;
+      if (stateGetter().root !== 'login') {
+        dismiss = () => {
+          ReactDOM.unmountComponentAtNode(holder);
+        };
+      }
+      ReactDOM.render(
+        <Notification
+          content={content}
+          dismiss={dismiss}
+          extraClasses="four-col"
+          isBlocking={true}
+        />, holder);
     };
     /**
       A bakery instance.
