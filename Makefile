@@ -31,7 +31,7 @@ CACHE := $(shell pwd)/downloadcache
 PYTHON_FILES := $(CACHE)/python
 PYTHON_CACHE := file:///$(PYTHON_FILES)
 WHEEL_CACHE := file:///$(CACHE)/wheels/generic
-LSB_WHEEL_CACHE := file:///$(CACHE)/wheels/$(shell lsb_release -c -s)
+LSB_WHEEL_CACHE := file:///$(CACHE)/wheels/$(uname -a | cut -f 1 -d " ")
 COLLECTED_REQUIREMENTS := collected-requirements
 PIP = bin/pip install --no-index --no-dependencies --find-links $(WHEEL_CACHE) --find-links $(LSB_WHEEL_CACHE) --find-links $(PYTHON_CACHE) -r $(1)
 VPART ?= patch
@@ -46,8 +46,6 @@ STATIC_CSS_FILES = \
 	$(GUIBUILD)/app/assets/stylesheets/normalize.css \
 	$(GUIBUILD)/app/assets/stylesheets/prettify.css \
 	$(GUIBUILD)/app/assets/stylesheets/cssgrids-responsive-min.css
-
-LSB_RELEASE = $(shell lsb_release -cs)
 
 SYSDEPS = coreutils g++ git inotify-tools nodejs \
 	python-virtualenv realpath xvfb chromium-browser
@@ -144,7 +142,7 @@ $(GUIBUILD)/app/%.js: $(GUISRC)/app/%.js $(NODE_MODULES)
 $(BUILT_JS_ASSETS): $(NODE_MODULES)
 	mkdir -p $(GUIBUILD)/app/assets
 	cp $(JS_MACAROON) $(JS_ASSETS)
-	cp -Lr $(JS_ASSETS) $(GUIBUILD)/app/assets/
+	cp -LR $(JS_ASSETS) $(GUIBUILD)/app/assets/
 	find $(BUILT_JS_ASSETS) -type f -name "*.js" \
 		-not -name "react*" | \
 		sed s/\.js$$//g | \
@@ -207,10 +205,16 @@ images: $(STATIC_IMAGES) $(SVG_SPRITE_FILE) $(FAVICON)
 .PHONY: gui
 gui: $(JUJUGUI) $(MODULESMIN) $(BUILT_JS_ASSETS) $(BUILT_YUI) $(CSS_FILE) $(STATIC_CSS_FILES) $(STATIC_IMAGES) $(SVG_SPRITE_FILE) $(FAVICON) $(REACT_ASSETS) $(STATIC_FONT_FILES)
 
+ifeq ($(shell uname -a | cut -f 1 -d " "),"Darwin")
+	WATCH=fswatch -r --exclude=".*sw[px]$$" -e Created -e Updated -e Removed -e Renamed -e MovedFrom -e MovedTo $(GUISRC); \
+else
+	WATCH=inotifywait -q -r --exclude=".*sw[px]$$" -e modify -e create -e delete -e move $(GUISRC); \
+endif
+
 .PHONY: watch
 watch:
 	while true; do \
-		inotifywait -q -r --exclude=".*sw[px]$$" -e modify -e create -e delete -e move $(GUISRC); \
+		$(WATCH)
 		$(MAKE) gui; \
 		echo "\033[1;32m-- Done rebuilding\033[0m"; \
 	done
@@ -231,11 +235,7 @@ clean-downloadcache:
 update-downloadcache: $(CACHE)
 	cd $(CACHE) && git pull origin master || true
 
-ifeq ($(LSB_RELEASE),precise)
-  COLLECT_CMD=@cp $(PYTHON_FILES)/* $(COLLECTED_REQUIREMENTS)
-else
-  COLLECT_CMD=bin/pip install -d $(COLLECTED_REQUIREMENTS) --no-index --no-dependencies --find-links $(WHEEL_CACHE) --find-links $(PYTHON_CACHE) -r requirements.txt
-endif
+COLLECT_CMD=bin/pip install -d $(COLLECTED_REQUIREMENTS) --no-index --no-dependencies --find-links $(WHEEL_CACHE) --find-links $(PYTHON_CACHE) -r requirements.txt
 
 .PHONY: collect-requirements
 collect-requirements: deps
