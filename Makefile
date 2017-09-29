@@ -206,9 +206,9 @@ images: $(STATIC_IMAGES) $(SVG_SPRITE_FILE) $(FAVICON)
 gui: $(JUJUGUI) $(MODULESMIN) $(BUILT_JS_ASSETS) $(BUILT_YUI) $(CSS_FILE) $(STATIC_CSS_FILES) $(STATIC_IMAGES) $(SVG_SPRITE_FILE) $(FAVICON) $(REACT_ASSETS) $(STATIC_FONT_FILES)
 
 ifeq ($(shell uname -a | cut -f 1 -d " "),"Darwin")
-	WATCH=fswatch -r --exclude=".*sw[px]$$" -e Created -e Updated -e Removed -e Renamed -e MovedFrom -e MovedTo $(GUISRC); \
+	WATCH=fswatch -r --exclude=".*sw[px]$$" -e Created -e Updated -e Removed -e Renamed -e MovedFrom -e MovedTo $(GUISRC)
 else
-	WATCH=inotifywait -q -r --exclude=".*sw[px]$$" -e modify -e create -e delete -e move $(GUISRC); \
+	WATCH=inotifywait -q -r --exclude=".*sw[px]$$" -e modify -e create -e delete -e move $(GUISRC)
 endif
 
 .PHONY: watch
